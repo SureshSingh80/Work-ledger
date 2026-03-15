@@ -24,3 +24,34 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* loader */
+
+.loader {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  position: relative;
+  animation: spin 1s linear infinite;
+}
+
+.loader::before,
+.loader::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.loader::before {
+  background: 
+    radial-gradient(farthest-side, white 90%, transparent) top/6px 6px no-repeat,
+    radial-gradient(farthest-side, white 90%, transparent) bottom/6px 6px no-repeat,
+    radial-gradient(farthest-side, white 90%, transparent) left/6px 6px no-repeat,
+    radial-gradient(farthest-side, white 90%, transparent) right/6px 6px no-repeat;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -3,15 +3,24 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { login } from '@/utils/admin/login';
 
 const page = () => {
     const {register, handleSubmit, formState: { errors }} = useForm();
      
-    const onSubmit = (data)=>{
+    const onSubmit = async (data)=>{
         console.log(data);
+
+        const res = await login(data);
+         if(res.success){
+            console.log(res.data);
+         }else{
+            console.log(res.message);
+         }
     }
 
     const [showPassword, setShowPassword] = useState(false);
+    const [loading,setLoading] = useState(false);
     
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

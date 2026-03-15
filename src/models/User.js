@@ -8,16 +8,24 @@ const userSchema = new Schema({
         unique:true,
         trim:true
     },
+    email:{
+        type:String,
+        required:true,
+        unique:true
+    },
     password:{
         type:String,
         required:true,
     },
+    phone:{
+        type:String
+    },
     role:{
         type:String,
-        enum:["admin","user"],
+        enum:["admin","superAdmin"],
         default:"user",
         index:true
-    },
+    },    
     isActive:{
         type:Boolean,
         default:true

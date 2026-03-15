@@ -1,9 +1,9 @@
 import { dbConnect } from "@/lib/Connections/dbConnect";
+import { adminSchema } from "@/lib/validations/admin.schema";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { adminSchema } from "@/lib/validations/admin.schema";
-import { nanoid } from "nanoid";
+import { customAlphabet, nanoid } from "nanoid";
 
 export async function POST(request){
     try {
@@ -14,31 +14,27 @@ export async function POST(request){
         // validate using zod 
         const parseData = adminSchema.safeParse(body);
 
-        // console.log("Parsed Data:", parseData); // Debugging log
-
         if(!parseData.success){
             return NextResponse.json({error:parseData.error},{status:400})
         }
 
-        
+       const parsedData = parseData.data; // guranteed parsed data is available here
 
-       const data = parseData.data; // guranteed parsed data is available here
-       
-
-       const username = "Admin"+ nanoid(4); // Generate a unique username for admin
-    //    console.log("username = ",username);
+       const nanoId = customAlphabet("0123456789", 5); // Generate a nanoid with uppercase letters and numbers")
+       const username = parsedData.adminId + nanoId();
 
        // password hashing
        const saltRounds = 10;
-       const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+       const hashedPassword = await bcrypt.hash(parsedData.password, saltRounds);
 
         // create new User 
 
         const newUser = new User({
             username:username,
+            email:parsedData.email,
             password:hashedPassword,
-            role:data.role ,
-            isActive:data.isActive
+            role:parsedData.role,
+            isActive:parsedData.isActive
         });
 
         await newUser.save();
@@ -47,9 +43,9 @@ export async function POST(request){
 
         
 
-        return NextResponse.json({message:"Admin created successfully"}, {status:201});
+        return NextResponse.json({message:"Admin created successfully"}, {status:200});
     } catch (error) {
-        console.log("Error in  creating admin:", error);
-        return NextResponse.json({error:"Error in Creating Admin"},{status:500});
+        console.log("Error in  creating Admin:", error);
+        return NextResponse.json({message:"Error in Creating Admin"},{status:500});
     }
 }

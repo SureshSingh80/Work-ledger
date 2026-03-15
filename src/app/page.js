@@ -9,7 +9,7 @@ export default function Home() {
       <nav className="flex justify-between items-center px-8 py-5 bg-white shadow-sm">
          <div className="hidden sm:block">
            <h1 className=" text-2xl font-bold text-blue-600">
-            LabourManager
+            WorkLedger
           </h1>
          </div>
 
@@ -22,7 +22,7 @@ export default function Home() {
           </Link>
 
           <Link
-            href="/request-access"
+            href="https://wa.me/918573838252?text=Hello%20I%20want%20to%20request%20access%20for%20LabourManager"
             className="px-4 py-2 rounded-xl border border-blue-600 text-blue-600 font-medium hover:bg-blue-50 transition"
           >
             Request Access
@@ -33,7 +33,7 @@ export default function Home() {
       {/* HERO SECTION */}
       <section className="text-center py-20 px-6">
         <h2 className="text-4xl md:text-5xl font-bold mb-6">
-          Smart Labour & Attendance Management System
+          Simplify Employee Management with WorkLedger
         </h2>
 
         <p className="max-w-2xl mx-auto text-gray-600 text-lg mb-8">
@@ -50,7 +50,7 @@ export default function Home() {
           </Link>
 
           <Link
-            href="/request-access"
+           href="https://wa.me/918573838252?text=Hello%20I%20want%20to%20request%20access%20for%20LabourManager"
             className="px-6 py-3 rounded-xl border border-blue-600 text-blue-600 font-medium hover:bg-blue-50 transition"
           >
             Request Access
@@ -70,7 +70,7 @@ export default function Home() {
               Daily Attendance Tracking
             </h4>
             <p className="text-gray-600">
-              Mark labour attendance daily with a single click.
+              Mark Employee attendance daily with a single click.
             </p>
           </div>
 
@@ -113,7 +113,7 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer className="bg-white py-8 text-center text-gray-500 border-t">
-        © {new Date().getFullYear()} LabourManager SaaS. All rights reserved.
+        © {new Date().getFullYear()} WorkLedger SaaS. All rights reserved.
       </footer>
     </div>
   

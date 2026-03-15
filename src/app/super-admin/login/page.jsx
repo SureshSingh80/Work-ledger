@@ -1,26 +1,48 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useState } from 'react';
+import { login } from '@/utils/superAdmin/login';
+import DotCircleLoader from '@/components/DotCircleLoader';
+import ShowResponseData from '@/components/ShowResponseData';
+import { useRouter } from 'next/navigation';
 
-const CreateAdmin = () => {
+const AdminLogin = () => {
 
   const {register, handleSubmit, formState: { errors }} = useForm();
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading,setLoading] = useState(false);
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setshowConfirmPassword] = useState(false);
-  const onSubmit = (data)=>{
-        console.log(data);
+  const router = useRouter();
+  
+
+  const onSubmit = async(data)=>{
+        setLoading(true);
+        const res = await login(data);
+          if(res.success){
+             setSuccess(res.data);
+             setError("");
+             // redirect to dashboard after successful login
+             setTimeout(()=>{
+                router.push("/super-admin/dashboard");
+                setSuccess("");
+             },1500)
+          }else{
+            setError(res.error || res.message || "Login failed");
+            setSuccess("");
+          }
+        setLoading(false);
     }
   return (
      <div className="min-h-screen flex items-center justify-center bg-gray-100">
         {/* User login form */}
 
-        <div className='bg-white p-8 rounded-xl shadow-lg w-full max-w-md m-4  '>
-          {/* <img src="/admin-icon.png" width={80} alt="Logo" className="my-0 mx-auto" /> */}
-          <h2 className="text-2xl font-bold mb-6 text-center text-black">Create Admin</h2>
+        <div className='bg-white p-8 rounded-xl shadow-lg w-full max-w-md m-4'>
+          <img src="/admin-icon.png" width={80} alt="Logo" className="my-0 mx-auto" />
+          {/* <h2 className="text-2xl font-bold mb-6 text-center text-black">Admin Login</h2> */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
              
             <div>
@@ -43,7 +65,7 @@ const CreateAdmin = () => {
               {errors.adminId && <p className="text-red-500 text-sm ml-2">{errors.adminId.message}</p>}
             </div>
 
-              {/* Password */}
+             {/* Password */}
             <div className='relative'>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Password
@@ -85,49 +107,15 @@ const CreateAdmin = () => {
                 {errors.password && <p className="text-red-500 text-sm ml-2">{errors.password.message}</p>}
             </div>
 
-            {/* Confirm password */}
-            <div className='relative'>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                id="confirmPassword"
-                name="confirmPassword"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black"
-                placeholder="Confirm your password"
-                {...register("confirmPassword", { required: "Please confirm your password", validate: (value) => {
-                  const password = document.getElementById("password").value;
-                  return value === password || "Passwords do not match";
-                }})}
-              />
-
-               <button
-                type="button"
-                onClick={() => setshowConfirmPassword(!showConfirmPassword)}
-                style={{
-                  position: "absolute",
-                  right: "5px",
-                  top: "45px",
-                  color: "#333333",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                tabIndex={-1}
-              >
-                {showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-
-             </button>
-              {/* error message */}
-              {errors.confirmPassword && <p className="text-red-500 text-sm ml-2">{errors.confirmPassword.message}</p>}
-            </div>
+                
+              {/* Display error or success message */}
+              <ShowResponseData success={success} error={error} />
 
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
             >
-              Create Admin
+              {loading ? <DotCircleLoader /> : "Login"}
             </button>
           </form>
         </div>
@@ -135,4 +123,4 @@ const CreateAdmin = () => {
   )
 }
 
-export default CreateAdmin
+export default AdminLogin

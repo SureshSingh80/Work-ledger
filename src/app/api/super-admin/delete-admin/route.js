@@ -7,22 +7,15 @@ export async function DELETE(request){
     try {
          await dbConnect();
         
-         const {adminId} = await request.json();
+         const {email} = await request.json();
 
-        if(!adminId || adminId === "undefined"){
-            return NextResponse.json({error:"Admin ID is required"},{status:400});
+        if(!email || email === "undefined"){
+            return NextResponse.json({error:"Admin email  is required"},{status:400});
         }
 
-        // ✅ ObjectId validation
-        if (!mongoose.isValidObjectId(adminId)) {
-        return NextResponse.json(
-            { error: "Invalid Admin ID format" }, 
-            { status: 400 }
-        );
-        }
 
         // delete admin from database
-        const deletedAdmin = await User.findByIdAndDelete(adminId);
+        const deletedAdmin = await User.findOneAndDelete({email:email, role:"admin"});
         if(!deletedAdmin){
             return NextResponse.json({error:"Admin not found"},{status:404});
         }
