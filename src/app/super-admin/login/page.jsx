@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 
 const AdminLogin = () => {
 
-  const {register, handleSubmit, formState: { errors }} = useForm();
+  const {register, handleSubmit, reset, formState: { errors }} = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -23,6 +23,7 @@ const AdminLogin = () => {
         setLoading(true);
         const res = await login(data);
           if(res.success){
+             reset();
              setSuccess(res.data);
              setError("");
              // redirect to dashboard after successful login

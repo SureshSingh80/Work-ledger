@@ -20,7 +20,7 @@ export async function POST(request){
 
 
         if(!parseData.success){
-            return NextResponse.json({error:parseData.error},{status:400})
+            return NextResponse.json({message:parseData.error},{status:400})
         }
 
         // console.log("Parsed Data:", parseData); // Debugging log

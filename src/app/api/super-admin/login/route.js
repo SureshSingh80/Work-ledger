@@ -25,17 +25,17 @@ export async function POST(request){
           // console.log("superAdmin = ",superAdmin);
 
           if(!superAdmin){
-            return NextResponse.json({error:"Invalid adminId or password"}, {status:401});
+            return NextResponse.json({message:"Invalid adminId or password"}, {status:401});
           }
 
           const isMatched = await bcrypt.compare(parsedData.password, superAdmin.password);
          
 
           if(!isMatched){
-            return NextResponse.json({error:"Invalid adminId or password"}, {status:401});
+            return NextResponse.json({message:"Invalid adminId or password"}, {status:401});
           }
 
-   const token = jwt.sign({userId:superAdmin._id, role:superAdmin.role}, process.env.JWT_SECRET, {expiresIn:"1d"});
+   const token = jwt.sign({adminId:superAdmin._id, role:superAdmin.role}, process.env.JWT_SECRET, {expiresIn:"1d"});
 
     const response = NextResponse.json({message:"Login successfully"},{status:200});
      response.cookies.set("superAdminToken",token,{

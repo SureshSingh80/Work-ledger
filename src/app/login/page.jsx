@@ -4,23 +4,39 @@ import { useForm } from 'react-hook-form';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { login } from '@/utils/admin/login';
+import ShowResponseData from '@/components/ShowResponseData';
+import DotCircleLoader from '@/components/DotCircleLoader';
+
 
 const page = () => {
-    const {register, handleSubmit, formState: { errors }} = useForm();
-     
-    const onSubmit = async (data)=>{
-        console.log(data);
-
-        const res = await login(data);
-         if(res.success){
-            console.log(res.data);
-         }else{
-            console.log(res.message);
-         }
-    }
+    const {register, handleSubmit, reset, formState: { errors }} = useForm();
 
     const [showPassword, setShowPassword] = useState(false);
     const [loading,setLoading] = useState(false);
+    const [success,setSuccess] = useState("");
+    const [error,setError] = useState("");
+     
+    const onSubmit = async (data)=>{
+        setLoading(true);
+        // console.log("Login data = ",data);
+
+        const res = await login(data);
+         if(res.success){
+            reset();
+            setSuccess(res.data);
+            setError("");
+            setTimeout(()=>{
+                setSuccess("");
+            },1500);
+         }else{
+            // console.log(res.message);
+            setError(res.error || res.message || "Login failed");
+            setSuccess("");
+         }
+         setLoading(false);
+    }
+
+    
     
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -31,22 +47,22 @@ const page = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                Username
+                adminId
               </label>
               <input
                 type="text"
-                id="username"
-                name="username"
+                id="adminId"
+                name="adminId"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black"
-                placeholder="Enter your username"
-                {...register("username", { required:"username is required", pattern: {
+                placeholder="Enter your adminId"
+                {...register("adminId", { required:"adminId is required", pattern: {
                 value: /^[a-zA-Z0-9_]+$/,
                 message:
                     "Username can only contain letters, numbers and underscore",
                 },})}
               />
               {/* error message */}
-              {errors.username && <p className="text-red-500 text-sm ml-2">{errors.username.message}</p>}
+              {errors.adminId && <p className="text-red-500 text-sm ml-2">{errors.adminId.message}</p>}
             </div>
 
              {/* Password */}
@@ -91,11 +107,16 @@ const page = () => {
                 {errors.password && <p className="text-red-500 text-sm ml-2">{errors.password.message}</p>}
             </div>
 
+            {/* login response */}
+            {
+              <ShowResponseData success={success} error={error} />
+            }
+
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
             >
-              Login
+              {loading ? <DotCircleLoader /> : "Login"}
             </button>
           </form>
         </div>

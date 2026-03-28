@@ -15,7 +15,7 @@ export async function POST(request){
         const parseData = adminSchema.safeParse(body);
 
         if(!parseData.success){
-            return NextResponse.json({error:parseData.error},{status:400})
+            return NextResponse.json({message:parseData.error},{status:400})
         }
 
        const parsedData = parseData.data; // guranteed parsed data is available here
