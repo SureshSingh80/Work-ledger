@@ -19,7 +19,7 @@ export default async function ProtectedSuperAdminLayout({children}) {
     // console.log("Super Admin token verification result = ",result);
     if(!result.ok){
         
-        redirect("/super-admin/cleanup-invalid-token");
+        redirect("/super-admin/logout");
     }
 
     return <>{children}</>

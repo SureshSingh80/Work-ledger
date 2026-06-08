@@ -48,7 +48,7 @@ const AdminLogin = () => {
              
             <div>
               <label htmlFor="adminId" className="block text-sm font-medium text-gray-700 mb-1">
-                Admin ID
+                Super Admin ID
               </label>
               <input
                 type="text"

@@ -23,13 +23,34 @@ const userSchema = new Schema({
     role:{
         type:String,
         enum:["admin","superAdmin"],
-        default:"user",
+        default:"admin",
         index:true
     },    
     isActive:{
         type:Boolean,
         default:true
     },
+     // OTP fields
+    otp:{
+        type:String,
+        default:null
+    },
+
+    otpExpiry:{
+        type:Date,
+        default:null
+    },
+
+    // Reset token fields
+    resetToken:{
+        type:String,
+        default:null
+    },
+
+    resetTokenExpiry:{
+        type:Date,
+        default:null
+    }
 
    
 },{timestamps:true});

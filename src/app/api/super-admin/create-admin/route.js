@@ -3,7 +3,7 @@ import { adminSchema } from "@/lib/validations/admin.schema";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { customAlphabet, nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 
 export async function POST(request){
     try {

@@ -47,7 +47,7 @@ const page = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                adminId
+                Admin ID
               </label>
               <input
                 type="text"
@@ -105,6 +105,10 @@ const page = () => {
               </button>
                 {/* error message */}
                 {errors.password && <p className="text-red-500 text-sm ml-2">{errors.password.message}</p>}
+            </div>
+
+            <div className='w-full flex justify-end mb-0'>
+                <span> <a href="/forgot-password" className="text-blue-500 hover:underline">Forgot Password ?</a></span>
             </div>
 
             {/* login response */}
