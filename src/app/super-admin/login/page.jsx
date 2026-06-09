@@ -108,6 +108,10 @@ const AdminLogin = () => {
                 {errors.password && <p className="text-red-500 text-sm ml-2">{errors.password.message}</p>}
             </div>
 
+             <div className='w-full flex justify-end mb-0'>
+                <span> <a href="/forgot-password" className="text-blue-500 hover:underline">Forgot Password ?</a></span>
+            </div>
+
                 
               {/* Display error or success message */}
               <ShowResponseData success={success} error={error} />

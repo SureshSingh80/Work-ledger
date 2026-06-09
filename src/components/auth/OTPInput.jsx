@@ -95,7 +95,7 @@ export default function VerifyOTPPage({ email }) {
     const res = await verifyOTP(email, enteredOtp);
     if (res.success) {
       setError("");
-      setSuccess(res.data.message || "OTP verified successfully");
+      setSuccess("OTP Verified Successfully");
     } else {
       setError(res.error.message || "Verification failed");
       setSuccess("");
@@ -116,11 +116,14 @@ export default function VerifyOTPPage({ email }) {
   const onSubmit = async (data)=>{
       setError('');
       setSuccess('');
-      setLoading(true);
+      setLoading("Resetting Password");
       const res = await resetNewPassword(email, data.password, data.confirmPassword); 
       if(res.success){
-        setSuccess(res.data);
+        setSuccess("New Password Set Successfully");
         setError('');
+        setTimeout(()=>{
+          router.replace("/login"); 
+        },2000);
         
       }else{
         setError(res.error.message || "Failed to set new password");
@@ -133,7 +136,7 @@ export default function VerifyOTPPage({ email }) {
   return (
     <div className="min-h-screen  flex items-center justify-center p-4">
       {
-        success || loading ? (
+        success === "OTP Verified Successfully" || loading ==="Resetting Password" || success ==="New Password Set Successfully" ? (
           //  re-enter new password component
           <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
             <h2 className="text-2xl font-bold mb-4">Set New Password</h2>
