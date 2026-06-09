@@ -37,11 +37,12 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "autoprefixer": "^10.5.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "lightningcss": "^1.30.2",
-    "tailwindcss": "^4"
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.17"
   },
   "engines": {
     "node": "20.x"
