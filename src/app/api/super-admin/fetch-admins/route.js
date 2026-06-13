@@ -19,7 +19,6 @@ export async function GET(request){
             username: admin.username,
             email: admin.email,
             role: admin.role,
-            password: admin.password,
             isActive: admin.isActive,
             createdAt: admin.createdAt
          }));

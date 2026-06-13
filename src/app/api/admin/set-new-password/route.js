@@ -2,20 +2,26 @@ import { dbConnect } from "@/lib/Connections/dbConnect";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { resetPasswordSchema } from "@/lib/validations/resetPassword.schema";
 
 export async function POST(req){
     try {
         await dbConnect();
-        const {email, newPassword, confirmPassword} = await req.json();
+        const body = await req.json();
 
-        console.log("Received reset new password request for:", email,newPassword,confirmPassword); // Debugging log
+       
+        const parsedData = resetPasswordSchema.safeParse(body);
+        // console.log("Parsed data:", parsedData);
 
-        if(!email || !newPassword || !confirmPassword){
-            return NextResponse.json({message: "Email, new password and confirm password are required"}, {status: 400});
+        if(!parsedData.success){
+            return NextResponse.json({message:"Invalid Email id and password"}, {status: 400});
         }
+        const {email, newPassword , confirmPassword} = parsedData.data;
+
         if(newPassword !== confirmPassword){
             return NextResponse.json({message: "Passwords do not match"}, {status: 400});
         }
+        
 
         const user = await User.findOne({email: email});
 
@@ -27,6 +33,10 @@ export async function POST(req){
         }
 
         if(user.resetTokenExpiry < new Date()){
+            user.resetToken = null;
+            user.resetTokenExpiry = null;
+
+            await user.save();
             return NextResponse.json({message: "Token has expired"}, {status: 400});
         }
 

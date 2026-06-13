@@ -1,25 +1,24 @@
 'use client'
 
-import { fetchAdmins } from '@/utils/superAdmin/fetchAdmins'
+import { fetchSuperAdmins } from '@/utils/superAdmin/fetchSuperAdmins'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {Label} from '@/components/ui/label'
 import {Switch} from '@/components/ui/switch'
 import React, { useState } from 'react'
 import { toggleAdminStatus } from '@/utils/superAdmin/toggleAdminStatus'
-// import { Loader } from 'lucide-react'
 import Loader from '@/components/Loader'
 import ReactQueryErrorPopUp from './ReactQueryErrorPopUp'
 
 
-const AdminList = () => {
+const SuperAdminList = () => {
 
    const   queryClient = useQueryClient();
    // const [currentStatus, setCurrentStatus] = useState(false);
 
     const { data, isLoading, isError, error, refetch } = useQuery({
 
-      queryKey:["admins"],
-      queryFn: fetchAdmins
+      queryKey:["superAdmins"],
+      queryFn: fetchSuperAdmins
 
    });
 
@@ -31,33 +30,33 @@ const AdminList = () => {
 
       // Stop ongoing refetches(fetchAdmin while toggling status) to prevent overwriting our optimistic update
       await queryClient.cancelQueries({
-         queryKey: ["admins"]
+         queryKey: ["superAdmins"]
       });
 
       // Previous cached data (if api failed need old state back)
-      const previousAdmins = queryClient.getQueryData(["admins"]);
+      const previousSuperAdmins = queryClient.getQueryData(["superAdmins"]);
 
       // Optimistically update cache
-      queryClient.setQueryData(["admins"], (oldData) => {
+      queryClient.setQueryData(["superAdmins"], (oldData) => {
 
-         return oldData.map((admin) =>
-            admin._id === id
-               ? { ...admin, isActive: !admin.isActive }
-               : admin
+         return oldData.map((superAdmin) =>
+            superAdmin._id === id
+               ? { ...superAdmin, isActive: !superAdmin.isActive }
+               : superAdmin
          );
 
       });
 
       // Return previous data for rollback
-      return { previousAdmins };
+      return { previousSuperAdmins };
    },
 
    onError: (err, id, context) => {
 
       // Rollback if API fails
       queryClient.setQueryData(
-         ["admins"],
-         context.previousAdmins
+         ["superAdmins"],
+         context.previousSuperAdmins
       );
    },
 
@@ -65,7 +64,7 @@ const AdminList = () => {
 
       // Final sync with server
       queryClient.invalidateQueries({
-         queryKey: ["admins"]
+         queryKey: ["superAdmins"]
       });
 
     }
@@ -79,20 +78,16 @@ const AdminList = () => {
   return (
      <div className='min-h-screen bg-gray-100 p-4'>
 
-         {/* <h1 className='text-2xl text-black font-bold mb-6 text-center'>
-            Admin List
-         </h1> */}
-
          {
             isLoading ? (
-               <Loader/>
+              <Loader/>
             ) : isError ? (
-               <div className="flex items-center justify-center min-h-screen">
+              <div className="flex items-center justify-center min-h-screen">
                     <ReactQueryErrorPopUp error={error} refetch={refetch}/>
 
               </div>
-            ) : data?.length == 0 ? (
-                <div className="flex flex-col items-center justify-center min-h-screen">
+            ) : data?.length === 0 ? (
+                 <div className="flex flex-col items-center justify-center min-h-screen">
                     <div className="text-7xl mb-3">📭</div>
                     <h3 className="text-2xl font-semibold text-gray-700">
                     No Super Admins Found
@@ -101,29 +96,29 @@ const AdminList = () => {
                     There are currently no super admin accounts available.
                     </p>
                 </div>
-            ):  (
-         <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
+            ):(
+               <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
 
-            {data && data.length>0 && data?.map(admin => (
+            { data?.map(superAdmin => (
 
                <div
-                  key={admin._id}
+                  key={superAdmin._id}
                   className='bg-white shadow-md rounded-xl p-4 border'
                >
 
                   <h2 className='text-lg font-semibold text-gray-600'>
-                     Username: {admin.username}
+                     Username: {superAdmin.username}
                   </h2>
 
 
                   <p className='text-gray-600'>
-                     Email: {admin.email}
+                     Email: {superAdmin.email}
                   </p>
 
                   <div className='mt-2 text-sm text-gray-600'>
 
                      <span className='font-medium'>Role: </span>
-                     {admin.role}
+                     {superAdmin.role}
 
                   </div>
 
@@ -135,13 +130,13 @@ const AdminList = () => {
 
                      <span
                         className={`ml-1 ${
-                           admin.isActive
+                           superAdmin.isActive
                            ? "text-green-600"
                            : "text-red-500"
                         }`}
                      >
 
-                        {admin.isActive ? "Active" : "Inactive"}
+                        {superAdmin.isActive ? "Active" : "Inactive"}
 
                      </span>
 
@@ -149,7 +144,7 @@ const AdminList = () => {
                     
                    
                         <div className='flex items-center space-x-2'>
-                            <Switch  className="ml-4 cursor-pointer" checked={admin.isActive} onCheckedChange={()=>toggleStatus(admin._id)}   />
+                            <Switch  className="ml-4 cursor-pointer" checked={superAdmin.isActive} onCheckedChange={()=>toggleStatus(superAdmin._id)}   />
                             <Label  className="ml-2 text-sm text-gray-600">
                                 Toggle Status
                             </Label>
@@ -161,7 +156,7 @@ const AdminList = () => {
 
                   <p className='text-xs text-gray-600 mt-2 '>
 
-                     Created: {new Date(admin.createdAt).toLocaleDateString()}
+                     Created: {new Date(superAdmin.createdAt).toLocaleDateString()}
 
                   </p>
 
@@ -170,14 +165,13 @@ const AdminList = () => {
             ))}
 
            
-          </div>
+         </div>
             )
          }
-          
 
 
       </div>
   )
 }
 
-export default AdminList
+export default SuperAdminList

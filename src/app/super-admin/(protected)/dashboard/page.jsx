@@ -8,8 +8,8 @@ const Dashboard = ()=>{
     const featureCards = [
     { title: "Create Admin", description: "Create a new admin account to manage the system.", icon: <ShieldPlus className="h-7 w-7" />, route: "/super-admin/create-admin" },
     { title: "Manage Admins", description: "View, edit, or delete existing admin accounts.", icon: <Users className="h-7 w-7" />, route: "/super-admin/manage-admins" },
-    { title: "Create SuperAdmin", description: "Create a new super admin account with elevated privileges.", icon: <Crown className="h-7 w-7" />, route: "/super-admin/create-superadmin" },
-    { title: "Manage SuperAdmins", description: "View, edit, or delete existing super admin accounts.", icon: <UserCog className="h-7 w-7" />, route: "/super-admin/manage-superadmins" },
+    { title: "Create SuperAdmin", description: "Create a new super admin account with elevated privileges.", icon: <Crown className="h-7 w-7" />, route: "/super-admin/create-super-admin" },
+    { title: "Manage SuperAdmins", description: "View, edit, or delete existing super admin accounts.", icon: <UserCog className="h-7 w-7" />, route: "/super-admin/manage-super-admins" },
     { title: "Logout", description: "Sign out of your current session.", icon: <LogOut className="h-7 w-7" />, route: "/super-admin/logout" },
 ];
     return(

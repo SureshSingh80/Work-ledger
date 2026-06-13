@@ -28,6 +28,10 @@ export async function POST(request){
             return NextResponse.json({message:"Invalid adminId or password"}, {status:401});
           }
 
+          if(!superAdmin.isActive){
+            return NextResponse.json({message:"Your account is deactivated. Please contact support."}, {status:403});
+          }
+
           const isMatched = await bcrypt.compare(parsedData.password, superAdmin.password);
          
 

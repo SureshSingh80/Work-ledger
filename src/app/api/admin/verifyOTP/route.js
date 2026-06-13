@@ -2,6 +2,7 @@ import { dbConnect } from "@/lib/Connections/dbConnect";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 
 export async function POST(req){
@@ -23,6 +24,11 @@ export async function POST(req){
                 return NextResponse.json({message: "OTP already used or not found"}, {status: 400});
             }
 
+             // check if OTP is expired
+            if(user.otpExpiry < new Date()){
+                return NextResponse.json({message: "OTP has expired"}, {status: 400});
+            }
+
             // compare OPT with bcrypted OTP in database
             const isOTPValid = await bcrypt.compare(otp, user.otp);
 
@@ -31,10 +37,7 @@ export async function POST(req){
                 return NextResponse.json({message: "Invalid OTP"}, {status: 400});
             }
 
-            // check if OTP is expired
-            if(user.otpExpiry < new Date()){
-                return NextResponse.json({message: "OTP has expired"}, {status: 400});
-            }
+           
 
             
             // clear OTP and expiry from database
@@ -43,7 +46,7 @@ export async function POST(req){
            
 
             // create a resetToken and expiry for password reset
-            const resetToken = Math.random().toString(36).substring(2);
+            const resetToken = crypto.randomBytes(32).toString("hex");;
 
             const hashedResetToken = await bcrypt.hash(resetToken, 10);
 
@@ -54,7 +57,7 @@ export async function POST(req){
 
             // set in browser cookie for 10 minutes
 
-            const res = NextResponse.json({ success: true });
+            const res = NextResponse.json({ success: true, message:"OTP verified successfully" }, {status: 200});
 
             res.cookies.set("resetToken", resetToken, {
                 httpOnly: true,

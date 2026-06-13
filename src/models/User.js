@@ -40,6 +40,10 @@ const userSchema = new Schema({
         type:Date,
         default:null
     },
+    otpRequestedAt:{
+        type:Date,
+        default:null
+    },
 
     // Reset token fields
     resetToken:{
