@@ -6,7 +6,7 @@ export async function proxy(request){
      const superAdminToken = request.cookies.get("superAdminToken")?.value || null;
 
      const isPublicPath =
-        path === "/login" ||
+        path === "/admin/login" ||
         path === "/signup" ||
         path === "/" || 
         path === "/forgot-password";
@@ -21,7 +21,7 @@ export async function proxy(request){
 
     if(!isPublicPath && !isSuperAdminPath){
         if(!adminToken){
-            return Response.redirect(new URL("/login", request.url));
+            return Response.redirect(new URL("/admin/login", request.url));
         }
     }
 

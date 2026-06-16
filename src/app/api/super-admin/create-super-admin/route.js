@@ -4,14 +4,31 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import {  superAdminSchema } from "@/lib/validations/superAdmin.schema";
 import { customAlphabet, nanoid } from "nanoid";
+import { getCurrentSuperAdmin } from "@/utils/superAdmin/getCurrentSuperAdmin";
 
 export async function POST(request){
     try {
         await dbConnect();
 
+         // check authentication 
+        
+        const currentSuperAdmin = await getCurrentSuperAdmin();
+    
+
+        if(!currentSuperAdmin){
+            return NextResponse.json({message:"Unauthorized"},{status:401});
+        }
+
+            // check superAdmin exists in the database
+            const superAdminExists =  await User.exists({_id: currentSuperAdmin.adminId,role: "superAdmin"});
+
+            if(!superAdminExists){
+            return NextResponse.json({message:"Super Admin not found"},{status:404});
+            }
+
         const body = await request.json();
 
-        console.log("body= ",body);
+        // console.log("body= ",body);
 
 
 

@@ -1,11 +1,28 @@
 import { dbConnect } from "@/lib/Connections/dbConnect";
 import User from "@/models/User";
+import { getCurrentSuperAdmin } from "@/utils/superAdmin/getCurrentSuperAdmin";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
 export async function DELETE(request){
     try {
          await dbConnect();
+
+          // check authentication 
+         
+           const currentSuperAdmin = await getCurrentSuperAdmin();
+    
+    
+            if(!currentSuperAdmin){
+                return NextResponse.json({message:"Unauthorized"},{status:401});
+            }
+    
+            // check superAdmin exists in the database
+            const superAdminExists =  await User.exists({_id: currentSuperAdmin.adminId,role: "superAdmin"});
+    
+            if(!superAdminExists){
+                return NextResponse.json({message:"Super Admin not found"},{status:404});
+            }
         
          const {email} = await request.json();
 

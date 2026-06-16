@@ -13,7 +13,7 @@ const Cards = ({ title, description, icon ,route }) => {
   };
 
   return (
-<div onClick={()=>handleClick(route)} className="bg-white p-5 rounded-xl shadow-lg m-4 flex  flex-col items-center gap-2 cursor-pointer hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] overflow-hidden transition-all duration-300 relative w-full ">
+ <div onClick={()=>handleClick(route)} className="bg-white p-5 rounded-xl shadow-lg m-4 flex  flex-col items-center gap-2 cursor-pointer hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] overflow-hidden transition-all duration-300 relative w-full ">
 
     {loading && (
         <div className="absolute inset-0 bg-card/80 backdrop-blur-sm flex items-center justify-center z-10 animate-fade-in">

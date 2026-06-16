@@ -6,6 +6,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { login } from '@/utils/admin/login';
 import ShowResponseData from '@/components/ShowResponseData';
 import DotCircleLoader from '@/components/DotCircleLoader';
+import { useRouter } from 'next/navigation';
 
 
 const page = () => {
@@ -15,6 +16,8 @@ const page = () => {
     const [loading,setLoading] = useState(false);
     const [success,setSuccess] = useState("");
     const [error,setError] = useState("");
+
+    const router = useRouter();
      
     const onSubmit = async (data)=>{
         setLoading(true);
@@ -26,7 +29,7 @@ const page = () => {
             setSuccess(res.data);
             setError("");
             setTimeout(()=>{
-                setSuccess("");
+                router.push("/admin/dashboard");
             },1500);
          }else{
             // console.log(res.message);

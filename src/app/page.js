@@ -15,7 +15,7 @@ export default function Home() {
 
         <div className="flex justify-between items-center w-full sm:w-auto">
           <Link
-            href="/login"
+            href="/admin/login"
             className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition mr-4"
           >
             Login
@@ -43,7 +43,7 @@ export default function Home() {
 
         <div className="space-x-4">
           <Link
-            href="/login"
+            href="/admin/login"
             className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
           >
             Login Now
