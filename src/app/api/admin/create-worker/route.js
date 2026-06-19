@@ -31,7 +31,7 @@ export async function POST(request){
           const parsedData = parseData.data;
 
           // create worker
-          const worker = await Worker.create({
+             await Worker.create({
               adminId: currentAdmin.adminId,
               name: parsedData.name,
               mobile: parsedData.mobile,
