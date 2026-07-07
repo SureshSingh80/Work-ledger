@@ -15,7 +15,7 @@ const ShowResponseData = ({success,error}) => {
             {
               error && (
                 <>
-                  <span className="text-red-500">{error}</span>
+                  <span className="text-red-500">{error || "Something went wrong"}</span>
                   <span className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs ml-2">
                     !
                   </span>

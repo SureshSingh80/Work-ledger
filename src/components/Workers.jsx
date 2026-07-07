@@ -3,12 +3,17 @@ import { fetchWorkers } from '@/utils/admin/fetchWorkers'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 
-import { EyeIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { EyeIcon, PlusIcon, Search, Trash2Icon } from 'lucide-react';
 import React, { useState } from 'react'
 import Loader from "@/components/Loader"
 import { deleteWorker } from '@/utils/admin/deleteWorker'
 import ShowResponseData from './ShowResponseData'
 import { Loader2 } from 'lucide-react'
+import SearchInput from './SearchInput';
+import { searchWorkers } from '@/utils/admin/searchWorkers';
+import FilterInput from './FilterInput';
+import { filterWorkers } from '@/utils/admin/filterWorkers';
+import ReactQueryErrorPopUp from './ReactQueryErrorPopUp';
 
 const Workers = () => {
 
@@ -17,14 +22,19 @@ const Workers = () => {
   const [idToDelete,setIdToDelete] = useState('');
   const [deleteError,setDeleteError] = useState('');
   const [loading,setLoading] = useState(false);
+  const [debouncedSearch,setDebouncedSearch] = useState('');
+  const [filterType,setFilterType] = useState('All');
+
 
   const {data, isLoading, isError, error, refetch} = useQuery({
-     queryKey:["workers"],
-     queryFn: fetchWorkers
+     queryKey:['workers',debouncedSearch,filterType],
+     queryFn:()=>fetchWorkers({search:debouncedSearch, filter:filterType})
   });
 
+  
+
   const handleDelete = async() => {
-     
+     setLoading(true);
    
     const res = await deleteWorker(idToDelete);
 
@@ -36,6 +46,7 @@ const Workers = () => {
       console.log("Error in deleting worker", res.error);
       setDeleteError(res.error);
     }
+    setLoading(false);
 
   }
 
@@ -43,8 +54,15 @@ const Workers = () => {
   return (
     <div className="overflow-x-auto rounded-xl border bg-white shadow-sm mb-2">
 
+       <div className='flex justify-around items-center gap-4 mb-2'>
+        <SearchInput setDebouncedSearch={setDebouncedSearch}/>
+        <FilterInput setFilterType={setFilterType} />
+      </div>
+      
   {
-    isLoading ? <Loader/>:(
+    isLoading ? <Loader/> : isError ? <div className='flex justify-around items-center'>
+      <ReactQueryErrorPopUp error={error} refetch={refetch}/>
+    </div>:(
        <table className={`w-full ${confirmDelete && "blur-sm"}`}>
 
      <thead className="bg-gray-100">

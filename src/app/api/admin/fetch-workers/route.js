@@ -7,6 +7,12 @@ import { NextResponse } from "next/server";
 export async function GET(request){
       try {
           await dbConnect();
+          const {searchParams} = new URL(request.url);
+
+          const search = searchParams.get("search");
+          const filter = searchParams.get("filter");
+
+        //   console.log("search: ", search, " filter: ", filter);
 
           const currentAdmin = await getCurrentAdmin();
 
@@ -21,8 +27,19 @@ export async function GET(request){
               return NextResponse.json({message:"Admin not found"},{status:404});
           }
 
-          const workers = await Worker.find({adminId: currentAdmin.adminId}).lean();
-          
+          const workers = await Worker.find({      
+                    adminId: currentAdmin.adminId,
+                    ...(search && {
+                        $or: [
+                        { name: { $regex: search, $options: "i" } },
+                        { mobile: { $regex: search } },
+                        ],
+                    }),
+                    ...(filter !== "All" && {
+                        workerType: filter,
+                    }),
+                });
+                        
           return NextResponse.json({workers:workers},{status:200});
 
 
