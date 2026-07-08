@@ -16,10 +16,13 @@ const AttendancePage = () => {
 
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filterType, setFilterType] = useState('All');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [markingAttendanceError, setMarkingAttendanceError] = useState(null);
+  const [markingAttendanceSuccess, setMarkingAttendanceSuccess] = useState(null);
 
   const {data, isLoading, isError, error, refetch} = useQuery({
-    queryKey: ['workers', debouncedSearch, filterType],
-    queryFn: () => fetchAttendanceWorkers({search: debouncedSearch, filter: filterType})
+    queryKey: ['workers', debouncedSearch, filterType, selectedDate],
+    queryFn: () => fetchAttendanceWorkers({search: debouncedSearch, filter: filterType,  selectedDate})
   });
 
       const totalPresent =
@@ -45,10 +48,16 @@ const AttendancePage = () => {
  
 
   const handleStatusChange = async(id, value) => {
-      const res = await markAttendance(id, value);
+      setMarkingAttendanceError(null);
+      const res = await markAttendance(id, value, selectedDate);
       if(res.success){
+        setMarkingAttendanceSuccess(res.data.message);
+        setTimeout(() => {
+          setMarkingAttendanceSuccess(null);
+        }, 3000);
         refetch();
       }else{
+        setMarkingAttendanceError(res.error);
         console.log("Error in marking attendance", res.error);
       }
   };
@@ -111,10 +120,32 @@ const AttendancePage = () => {
 
         </div>
 
-        <input
+        <div>
+          {markingAttendanceError && (
+            <ShowResponseData
+              error={markingAttendanceError}
+            />
+          )}
+          {
+            markingAttendanceSuccess && (
+              <ShowResponseData
+                success={markingAttendanceSuccess}
+              />
+            )
+          }
+        </div>
+
+        <div>
+          <input
           type="date"
+          value={selectedDate}
+          onChange={(e) => {
+            setSelectedDate(e.target.value);
+             setMarkingAttendanceError(null);
+          }}
           className="rounded-lg border px-4 py-2"
         />
+        </div>
 
       </div>
 
@@ -203,13 +234,16 @@ const AttendancePage = () => {
                 <td className="px-6 py-4">
 
                   <select
-                    value={worker.todayAttendance?.status ?? "Absent"}
+                    value={worker.todayAttendance?.status ?? "Mark Attendance"}
                     onChange={(e) =>
                       handleStatusChange(worker._id, e.target.value)
                     }
                    
                     className="rounded-lg border px-3 py-2"
                   >
+                    <option disabled>
+                      Mark Attendance
+                    </option>
 
                      <option>
                       Absent
@@ -282,18 +316,6 @@ const AttendancePage = () => {
         <span className="text-gray-600">
           Not Marked : <strong>{totalNotMarked}</strong>
         </span>
-
-      </div>
-
-      {/* Save */}
-
-      <div className="mt-8 flex justify-end">
-
-        <button
-          className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
-        >
-          Save All Changes
-        </button>
 
       </div>
 

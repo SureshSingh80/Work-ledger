@@ -11,6 +11,9 @@ export async function GET(request){
         const { searchParams } = new URL(request.url);
         const search = searchParams.get("search");
         const filter = searchParams.get("filter");
+        const selectedDate = searchParams.get("date");
+
+      //   console.log("search: ", search, " filter: ", filter, " selectedDate: ", selectedDate);
 
         const currentAdmin = await getCurrentAdmin();
         
@@ -39,11 +42,18 @@ export async function GET(request){
          });
         
         // 2. Today's date
-         const today = new Date();
-         today.setHours(0, 0, 0, 0);
+         let startDate;
 
-         const tomorrow = new Date(today);
-         tomorrow.setDate(tomorrow.getDate() + 1);
+         if (selectedDate) {
+            startDate = new Date(selectedDate);
+         } else {
+            startDate = new Date();
+         }
+
+         startDate.setHours(0, 0, 0, 0);
+
+         const endDate = new Date(startDate);
+         endDate.setDate(endDate.getDate() + 1);
 
 
       // 3. Fetch attendance only for fetched workers
@@ -55,8 +65,8 @@ export async function GET(request){
          },
 
          attendanceDate: {
-            $gte: today,
-            $lt: tomorrow,
+            $gte: startDate,
+            $lt: endDate,
          },
       }).lean();
 

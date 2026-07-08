@@ -8,11 +8,11 @@ import { NextResponse } from "next/server";
 export async function POST(request){
       try {
          await dbConnect();
-         const { workerId, status } = await request.json();
+         const { workerId, status, selectedDate } = await request.json();
 
          // validate 
-        if(!workerId || !status){
-            return NextResponse.json({message:"Worker ID and status are required."},{status:400});
+        if(!workerId || !status || !selectedDate){
+            return NextResponse.json({message:"Worker ID, status, and date are required."},{status:400});
         }
 
         const allowedStatus = ["Present", "Absent", "Half Day"];
@@ -45,21 +45,34 @@ export async function POST(request){
             return NextResponse.json({message:"Worker not found"},{status:404});
         }
 
-            // add / update attendance        
+            // add / update attendance       
+            
+            const attendanceDate = new Date(selectedDate);
+             if (isNaN(attendanceDate.getTime())) {
+                return NextResponse.json(
+                    { message: "Invalid attendance date." },
+                    { status: 400 }
+                );
+}
+            attendanceDate.setHours(0, 0, 0, 0);
         
             const today = new Date();
             today.setHours(0, 0, 0, 0);
+
+            if(attendanceDate > today){
+                return NextResponse.json({message:"Cannot mark attendance for future dates"},{status:400});
+            }
 
             const markAttendance = await Attendance.findOneAndUpdate(
                 {
                     adminId: currentAdmin.adminId,
                     workerId,
-                    attendanceDate: today
+                    attendanceDate
                 },
                 {
                     adminId: currentAdmin.adminId,
                     workerId,
-                    attendanceDate: today,
+                    attendanceDate,
                     status
                 },
                 {

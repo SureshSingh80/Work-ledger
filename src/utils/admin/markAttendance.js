@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export async function markAttendance(workerId, status) {
+export async function markAttendance(workerId, status, selectedDate) {
     try {
-         const res = await axios.post('/api/admin/markAttendance', { workerId, status });
+         const res = await axios.post('/api/admin/markAttendance', { workerId, status, selectedDate });
          return { success: true, data: res.data};
     } catch (error) {
         console.log("Error in marking attendance", error);
