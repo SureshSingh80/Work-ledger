@@ -13,7 +13,7 @@ export async function GET(request){
         const filter = searchParams.get("filter");
         const selectedDate = searchParams.get("date");
 
-      //   console.log("search: ", search, " filter: ", filter, " selectedDate: ", selectedDate);
+        console.log("search: ", search, " filter: ", filter, " selectedDate: ", selectedDate);
 
         const currentAdmin = await getCurrentAdmin();
         
