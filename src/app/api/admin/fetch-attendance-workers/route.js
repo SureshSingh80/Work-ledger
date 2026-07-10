@@ -133,7 +133,11 @@ export async function GET(request){
 
       return NextResponse.json({
          workers: formattedWorkers,
-      });
+         debug:{
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
+         }
+      }, { status: 200 });
 
      } catch (error) {
         console.log("Error in fetch attendance workers",error);
