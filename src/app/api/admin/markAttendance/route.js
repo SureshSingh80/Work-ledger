@@ -1,4 +1,5 @@
 import { dbConnect } from "@/lib/Connections/dbConnect";
+import { getISTStartDate } from "@/lib/dateUtils";
 import Attendance from "@/models/Attendance";
 import User from "@/models/User";
 import Worker from "@/models/Worker";
@@ -47,17 +48,21 @@ export async function POST(request){
 
             // add / update attendance       
             
-            const attendanceDate = new Date(selectedDate);
-             if (isNaN(attendanceDate.getTime())) {
-                return NextResponse.json(
-                    { message: "Invalid attendance date." },
-                    { status: 400 }
-                );
-}
-            attendanceDate.setHours(0, 0, 0, 0);
+//             const attendanceDate = new Date(selectedDate);
+//              if (isNaN(attendanceDate.getTime())) {
+//                 return NextResponse.json(
+//                     { message: "Invalid attendance date." },
+//                     { status: 400 }
+//                 );
+// }
+//             attendanceDate.setHours(0, 0, 0, 0);
         
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+//             const today = new Date();
+//             today.setHours(0, 0, 0, 0);
+
+            const attendanceDate = getISTStartDate(selectedDate);
+
+            const today = getISTStartDate();
 
             if(attendanceDate > today){
                 return NextResponse.json({message:"Cannot mark attendance for future dates"},{status:400});
