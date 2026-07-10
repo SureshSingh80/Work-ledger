@@ -41,7 +41,11 @@ export async function GET(request){
             }),
          });
         
-        // 2. Today's date
+
+         if (workers.length === 0) {
+            return NextResponse.json({ message: "No workers found" }, { status: 404 });
+         }
+       
          let startDate;
 
          if (selectedDate) {
@@ -55,73 +59,86 @@ export async function GET(request){
          const endDate = new Date(startDate);
          endDate.setDate(endDate.getDate() + 1);
 
+         console.log("selectedDate:", selectedDate);
+         console.log("startDate:", startDate.toISOString());
+         console.log("endDate:", endDate.toISOString());
+
+         return NextResponse.json({
+         debug: {
+            selectedDate,
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
+            
+           }
+         });
+
 
       // 3. Fetch attendance only for fetched workers
-      const attendance = await Attendance.find({
-         adminId: currentAdmin.adminId,
+      // const attendance = await Attendance.find({
+      //    adminId: currentAdmin.adminId,
 
-         workerId: {
-            $in: workers.map(worker => worker._id),
-         },
+      //    workerId: {
+      //       $in: workers.map(worker => worker._id),
+      //    },
 
-         attendanceDate: {
-            $gte: startDate,
-            $lt: endDate,
-         },
-      }).lean();
+      //    attendanceDate: {
+      //       $gte: startDate,
+      //       $lt: endDate,
+      //    },
+      // }).lean();
 
-      // console.log("Attendance Records: ", attendance);
-
-
-      // 4. Create lookup map
-      const attendanceMap = new Map();
-
-      attendance.forEach(record => {
-         attendanceMap.set(
-            record.workerId.toString(),
-            record
-         );
-      });
+      // // console.log("Attendance Records: ", attendance);
 
 
-      // 5. Merge data
-      const formattedWorkers = workers.map(worker => {
+      // // 4. Create lookup map
+      // const attendanceMap = new Map();
 
-         const todayAttendance =
-            attendanceMap.get(worker._id.toString());
+      // attendance.forEach(record => {
+      //    attendanceMap.set(
+      //       record.workerId.toString(),
+      //       record
+      //    );
+      // });
 
-         return {
 
-            _id: worker._id,
+      // // 5. Merge data
+      // const formattedWorkers = workers.map(worker => {
 
-            name: worker.name,
+      //    const todayAttendance =
+      //       attendanceMap.get(worker._id.toString());
 
-            mobile: worker.mobile,
+      //    return {
 
-            workerType: worker.workerType,
+      //       _id: worker._id,
 
-            dailyWage: worker.dailyWage,
+      //       name: worker.name,
 
-            isActive: worker.isActive,
+      //       mobile: worker.mobile,
 
-            todayAttendance: todayAttendance
-                  ? {
-                        status: todayAttendance.status,
-                        overtimeHours:
-                           todayAttendance.overtimeHours,
-                        note: todayAttendance.note,
-                        attendanceDate:
-                           todayAttendance.attendanceDate,
-                  }
-                  : null,
-         };
-      });
+      //       workerType: worker.workerType,
 
-      // console.log("Formatted Workers: ", formattedWorkers);
+      //       dailyWage: worker.dailyWage,
 
-      return NextResponse.json({
-         workers: formattedWorkers,
-      });
+      //       isActive: worker.isActive,
+
+      //       todayAttendance: todayAttendance
+      //             ? {
+      //                   status: todayAttendance.status,
+      //                   overtimeHours:
+      //                      todayAttendance.overtimeHours,
+      //                   note: todayAttendance.note,
+      //                   attendanceDate:
+      //                      todayAttendance.attendanceDate,
+      //             }
+      //             : null,
+      //    };
+      // });
+
+      // // console.log("Formatted Workers: ", formattedWorkers);
+
+      // return NextResponse.json({
+      //    workers: formattedWorkers,
+      // });
 
      } catch (error) {
         console.log("Error in fetch attendance workers",error);
