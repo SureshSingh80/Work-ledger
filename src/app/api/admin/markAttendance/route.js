@@ -61,6 +61,8 @@ export async function POST(request){
 //             today.setHours(0, 0, 0, 0);
 
             const attendanceDate = getISTStartDate(selectedDate);
+            // console.log("Selected Date (IST):", selectedDate);
+            // console.log("Attendance Date (UTC):", attendanceDate.toISOString());    
 
             const today = getISTStartDate();
 

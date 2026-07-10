@@ -63,9 +63,9 @@ export async function GET(request){
 
          const { startDate, endDate } = getISTDayRange(selectedDate);
 
-         console.log("selectedDate:", selectedDate);
-         console.log("startDate:", startDate.toISOString());
-         console.log("endDate:", endDate.toISOString());
+         // console.log("selectedDate:", selectedDate);
+         // console.log("startDate:", startDate.toISOString());
+         // console.log("endDate:", endDate.toISOString());
 
 
       // 3. Fetch attendance only for fetched workers
@@ -136,6 +136,7 @@ export async function GET(request){
          debug:{
             startDate: startDate.toISOString(),
             endDate: endDate.toISOString(),
+            selectedDate: selectedDate || "Not provided",
          }
       }, { status: 200 });
 
