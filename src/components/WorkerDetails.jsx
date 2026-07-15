@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Pencil } from 'lucide-react';
 import EditWorkerForm from './EditWorkerForm';
 
-const WorkerDetails = ({worker,refetch}) => {
+const WorkerDetails = ({worker, totalPresent, refetch}) => {
 
     const [isEditing,setIsEditing] = useState(false);
   return (
@@ -56,7 +56,7 @@ const WorkerDetails = ({worker,refetch}) => {
           <div>
             <p className="text-sm text-gray-500">Joining Date</p>
             <p className="font-medium">
-              {new Date(worker.joiningDate).toLocaleDateString()}
+              {new Date(worker.joiningDate).toLocaleDateString("en-IN")}
             </p>
           </div>
 
@@ -82,7 +82,7 @@ const WorkerDetails = ({worker,refetch}) => {
               Total Attendance
             </p>
             <h3 className="mt-1 text-2xl font-bold">
-              0
+              {totalPresent}
             </h3>
           </div>
 
@@ -91,7 +91,7 @@ const WorkerDetails = ({worker,refetch}) => {
               Total Earned
             </p>
             <h3 className="mt-1 text-2xl font-bold">
-              ₹0
+              ₹{totalPresent * worker.dailyWage}  
             </h3>
           </div>
 
@@ -100,7 +100,7 @@ const WorkerDetails = ({worker,refetch}) => {
               Pending Amount
             </p>
             <h3 className="mt-1 text-2xl font-bold text-red-600">
-              ₹0
+              ₹{(totalPresent * worker.dailyWage) - worker.totalPaid ? (totalPresent * worker.dailyWage) - worker.totalPaid : totalPresent * worker.dailyWage}
             </h3>
           </div>
 

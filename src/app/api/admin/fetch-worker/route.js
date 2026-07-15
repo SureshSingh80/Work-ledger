@@ -1,4 +1,5 @@
 import { dbConnect } from "@/lib/Connections/dbConnect";
+import Attendance from "@/models/Attendance";
 import User from "@/models/User";
 import Worker from "@/models/Worker";
 import { getCurrentAdmin } from "@/utils/admin/getCurrentAdmin";
@@ -25,10 +26,35 @@ export async function GET(request){
                 return NextResponse.json({message:"Admin not found"},{status:404});
             }
 
-            const worker = await Worker.findOne({_id: id}).lean();
-            // console.log("worker= ",worker);
+            const [worker, totalPresent] = await Promise.all([
+                    Worker.findOne({
+                        _id: id,
+                        adminId: currentAdmin.adminId
+                    }).lean(),
 
-            return NextResponse.json({worker:worker},{status:200});
+                    Attendance.countDocuments({
+                        adminId: currentAdmin.adminId,
+                        workerId: id,
+                        status: "Present"
+                    })
+            ]);
+
+            if (!worker) {
+                return NextResponse.json(
+                    { message: "Worker not found" },
+                    { status: 404 }
+                );
+            }
+
+            return NextResponse.json(
+                    {
+                        worker,
+                        totalPresent
+                    },
+                    {
+                        status: 200
+                    }
+            );
           
      } catch (error) {
           console.log("Error fetching worker: ",error);

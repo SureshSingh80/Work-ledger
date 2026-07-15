@@ -1,7 +1,9 @@
 import { dbConnect } from "@/lib/Connections/dbConnect";
+import Attendance from "@/models/Attendance";
 import User from "@/models/User";
 import Worker from "@/models/Worker";
 import { getCurrentAdmin } from "@/utils/admin/getCurrentAdmin";
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
 export async function GET(request){
@@ -19,6 +21,7 @@ export async function GET(request){
           if(!currentAdmin){
               return NextResponse.json({message:"Unauthorized"},{status:401});
           }
+
 
         // get admin existence
           const adminExists =  await User.exists({_id: currentAdmin.adminId,role: "admin"});
@@ -39,8 +42,44 @@ export async function GET(request){
                         workerType: filter,
                     }),
                 });
+
+         // calculate total worker attendance for each worker
+          
+        const attendanceCounts = await Attendance.aggregate([
+        {
+                $match: {
+                adminId: new mongoose.Types.ObjectId(currentAdmin.adminId),
+                workerId: { $in: workers.map(worker => worker._id) },
+                status: "Present",
+                },
+            },
+            {
+                $group: {
+                _id: "$workerId",
+                totalPresent: { $sum: 1 },
+                },
+            },
+        ]);
+
+        const attendanceMap = new Map();
+
+            attendanceCounts.forEach(record => {
+                attendanceMap.set(
+                    record._id.toString(),
+                    record.totalPresent
+                );
+            });
+            
+            const formattedWorkers = workers.map(worker => ({
+                ...worker.toObject(),
+
+                totalPresent:
+                    attendanceMap.get(worker._id.toString()) || 0,
+            }));
+
+        //   console.log("Formatted Workers: ", formattedWorkers);
                         
-          return NextResponse.json({workers:workers},{status:200});
+           return NextResponse.json({workers:formattedWorkers},{status:200});
 
 
       } catch (error) {

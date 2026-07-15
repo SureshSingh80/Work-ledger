@@ -11,9 +11,13 @@ import ReactQueryErrorPopUp from './ReactQueryErrorPopUp';
 import { fetchAttendanceWorkers } from '@/utils/admin/fetchAttendanceWorkers';
 import { fetchWorkers } from '@/utils/admin/fetchWorkers';
 import { markAttendance } from '@/utils/admin/markAttendance';
+import { useRouter } from 'next/navigation';
+
 
 const AttendancePage = () => {
 
+  const router = useRouter();
+  
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filterType, setFilterType] = useState('All');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -265,7 +269,7 @@ const AttendancePage = () => {
 
                 <td className="px-6 py-4">
 
-                  <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                  <button onClick={ () => router.push(`/admin/workers/${worker._id}/history`)} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
                      Go to History
                   </button>
 
