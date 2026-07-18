@@ -40,25 +40,11 @@ export async function POST(request){
         }
 
         // get worker existence
-        const worker = await Worker.findOne({_id: workerId, adminId: currentAdmin.adminId});
+        const workerExistence = await Worker.exists({_id: workerId, adminId: currentAdmin.adminId});
 
-        if(!worker){
+        if(!workerExistence){
             return NextResponse.json({message:"Worker not found"},{status:404});
         }
-
-            // add / update attendance       
-            
-//             const attendanceDate = new Date(selectedDate);
-//              if (isNaN(attendanceDate.getTime())) {
-//                 return NextResponse.json(
-//                     { message: "Invalid attendance date." },
-//                     { status: 400 }
-//                 );
-// }
-//             attendanceDate.setHours(0, 0, 0, 0);
-        
-//             const today = new Date();
-//             today.setHours(0, 0, 0, 0);
 
             const attendanceDate = getISTStartDate(selectedDate);
             // console.log("Selected Date (IST):", selectedDate);

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Pencil } from 'lucide-react';
 import EditWorkerForm from './EditWorkerForm';
 
-const WorkerDetails = ({worker, totalPresent, refetch}) => {
+const WorkerDetails = ({worker, totalPresent, totalHalfDays, totalPaid, refetch}) => {
 
     const [isEditing,setIsEditing] = useState(false);
   return (
@@ -82,7 +82,7 @@ const WorkerDetails = ({worker, totalPresent, refetch}) => {
               Total Attendance
             </p>
             <h3 className="mt-1 text-2xl font-bold">
-              {totalPresent}
+              {totalPresent + totalHalfDays * 0.5} days
             </h3>
           </div>
 
@@ -91,7 +91,7 @@ const WorkerDetails = ({worker, totalPresent, refetch}) => {
               Total Earned
             </p>
             <h3 className="mt-1 text-2xl font-bold">
-              ₹{totalPresent * worker.dailyWage}  
+              ₹{(totalPresent + totalHalfDays * 0.5) * worker.dailyWage}  
             </h3>
           </div>
 
@@ -100,7 +100,7 @@ const WorkerDetails = ({worker, totalPresent, refetch}) => {
               Pending Amount
             </p>
             <h3 className="mt-1 text-2xl font-bold text-red-600">
-              ₹{(totalPresent * worker.dailyWage) - worker.totalPaid ? (totalPresent * worker.dailyWage) - worker.totalPaid : totalPresent * worker.dailyWage}
+              ₹{(totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)}
             </h3>
           </div>
 

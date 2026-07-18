@@ -28,6 +28,8 @@ const Page = () => {
 
   const worker = data?.worker;
   const totalPresent = data?.totalPresent;
+  const totalHalfDays = data?.totalHalfDays;
+  const totalPaid = data?.totalPaid;
 
   if (isLoading) {
     return (
@@ -46,7 +48,7 @@ const Page = () => {
   }
 
   return (
-     <WorkerDetails worker={worker} totalPresent={totalPresent} refetch={refetch}/>
+     <WorkerDetails worker={worker} totalPresent={totalPresent} totalHalfDays={totalHalfDays} totalPaid={totalPaid} refetch={refetch}/>
   );
 };
 

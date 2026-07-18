@@ -76,9 +76,7 @@ export async function GET(request) {
         if (month) {
 
             const year = new Date().getFullYear();
-
             const startDate = new Date(year, Number(month) - 1, 1);
-
             const endDate = new Date(year, Number(month), 1);
 
             summaryQuery.attendanceDate = {

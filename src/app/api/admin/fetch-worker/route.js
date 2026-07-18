@@ -1,8 +1,10 @@
 import { dbConnect } from "@/lib/Connections/dbConnect";
 import Attendance from "@/models/Attendance";
+import Payment from "@/models/Payment";
 import User from "@/models/User";
 import Worker from "@/models/Worker";
 import { getCurrentAdmin } from "@/utils/admin/getCurrentAdmin";
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
 export async function GET(request){
@@ -26,7 +28,7 @@ export async function GET(request){
                 return NextResponse.json({message:"Admin not found"},{status:404});
             }
 
-            const [worker, totalPresent] = await Promise.all([
+            const [worker, totalPresent,totalHalfDays, paymentResult] = await Promise.all([
                     Worker.findOne({
                         _id: id,
                         adminId: currentAdmin.adminId
@@ -36,8 +38,32 @@ export async function GET(request){
                         adminId: currentAdmin.adminId,
                         workerId: id,
                         status: "Present"
-                    })
+                    }),
+                    Attendance.countDocuments({
+                        adminId: currentAdmin.adminId,
+                        workerId: id,
+                        status: "Half Day"
+                    }),
+                    Payment.aggregate([
+                        {
+                            $match: {
+                                adminId: new mongoose.Types.ObjectId(currentAdmin.adminId),
+                                workerId: new mongoose.Types.ObjectId(id),
+                            },
+                        },
+                        {
+                            $group: {
+                                _id: null,
+                                totalPaid: {
+                                    $sum: "$amount",
+                                },
+                            },
+                        },
+                ]),
+                    
             ]);
+
+            const totalPaid = paymentResult[0]?.totalPaid || 0;
 
             if (!worker) {
                 return NextResponse.json(
@@ -49,7 +75,9 @@ export async function GET(request){
             return NextResponse.json(
                     {
                         worker,
-                        totalPresent
+                        totalPresent,
+                        totalHalfDays,
+                        totalPaid
                     },
                     {
                         status: 200

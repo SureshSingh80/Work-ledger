@@ -1,5 +1,6 @@
 import { dbConnect } from "@/lib/Connections/dbConnect";
 import Attendance from "@/models/Attendance";
+import Payment from "@/models/Payment";
 import User from "@/models/User";
 import Worker from "@/models/Worker";
 import { getCurrentAdmin } from "@/utils/admin/getCurrentAdmin";
@@ -43,40 +44,97 @@ export async function GET(request){
                     }),
                 });
 
+            // console.log("Fetched Workers: ", workers);
+
          // calculate total worker attendance for each worker
           
-        const attendanceCounts = await Attendance.aggregate([
-        {
-                $match: {
-                adminId: new mongoose.Types.ObjectId(currentAdmin.adminId),
-                workerId: { $in: workers.map(worker => worker._id) },
-                status: "Present",
+       
+     
+
+        const [attendanceCounts, paymentCounts] = await Promise.all([
+            Attendance.aggregate([
+                {
+                    $match: {
+                        adminId: new mongoose.Types.ObjectId(currentAdmin.adminId),
+                        workerId: { $in: workers.map(worker => worker._id) },
+                    },
                 },
-            },
-            {
-                $group: {
-                _id: "$workerId",
-                totalPresent: { $sum: 1 },
+                {
+                    $group: {
+                        _id: "$workerId",
+                        totalPresent: {
+                            $sum: {
+                                $cond: [{ $eq: ["$status", "Present"] }, 1, 0],
+                            },
+                        },
+                        totalAbsent: {
+                            $sum: {
+                                $cond: [{ $eq: ["$status", "Absent"] }, 1, 0],
+                            },
+                        },
+                        totalHalfDay: {
+                            $sum: {
+                                $cond: [{ $eq: ["$status", "Half Day"] }, 1, 0],
+                            },
+                        },
+                    },
                 },
-            },
+            ]),
+            Payment.aggregate([
+                {
+                    $match: {
+                        adminId: new mongoose.Types.ObjectId(currentAdmin.adminId),
+                        workerId: { $in: workers.map(worker => worker._id) },
+                    },
+                },
+                {
+                    $group: {
+                        _id: "$workerId",
+                        totalPaid: {
+                            $sum: "$amount",
+                        },
+                    },
+                },
+            ]),
         ]);
 
         const attendanceMap = new Map();
 
-            attendanceCounts.forEach(record => {
-                attendanceMap.set(
-                    record._id.toString(),
-                    record.totalPresent
-                );
+        attendanceCounts.forEach(record => {
+            attendanceMap.set(record._id.toString(), {
+                totalPresent: record.totalPresent,
+                totalAbsent: record.totalAbsent,
+                totalHalfDay: record.totalHalfDay,
             });
+        });
+
+       
+        const paymentMap = new Map();
+
+        paymentCounts.forEach(record => {
+            paymentMap.set(
+                record._id.toString(),
+                record.totalPaid
+            );
+        });
             
-            const formattedWorkers = workers.map(worker => ({
+            const formattedWorkers = workers.map(worker => {
+
+            const attendance =
+                attendanceMap.get(worker._id.toString()) || {};
+
+            return {
                 ...worker.toObject(),
 
-                totalPresent:
-                    attendanceMap.get(worker._id.toString()) || 0,
-            }));
+                totalPresent: attendance.totalPresent || 0,
 
+                totalAbsent: attendance.totalAbsent || 0,
+
+                totalHalfDay: attendance.totalHalfDay || 0,
+
+                totalPaid: paymentMap.get(worker._id.toString()) || 0,
+            };
+        });
         //   console.log("Formatted Workers: ", formattedWorkers);
                         
            return NextResponse.json({workers:formattedWorkers},{status:200});
