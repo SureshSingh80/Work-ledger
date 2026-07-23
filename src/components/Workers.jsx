@@ -121,8 +121,31 @@ const Workers = () => {
             ₹{(worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage}
           </td>
 
-          <td className="px-12 py-3 text-red-600 font-medium">
-            ₹{(worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage - (worker.totalPaid || 0)}
+         <td
+            className={`px-12 py-3 font-medium ${
+              ((worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage - (worker.totalPaid || 0)) < 0
+                ? "text-blue-600"
+                : ((worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage - (worker.totalPaid || 0)) === 0
+                ? "text-green-600"
+                : "text-orange-600"
+            }`}
+          >
+            <p>
+              ₹
+              {(worker.totalPresent + worker.totalHalfDay * 0.5) *
+                worker.dailyWage -
+                (worker.totalPaid || 0)}
+            </p>
+
+            <p className="text-xs font-medium">
+              {((worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage -
+                (worker.totalPaid || 0)) < 0
+                ? "Advance"
+                : ((worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage -
+                    (worker.totalPaid || 0)) === 0
+                ? "Settled"
+                : "Pending"}
+            </p>
           </td>
 
           <td className="px-12 py-3">

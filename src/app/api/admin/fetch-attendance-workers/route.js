@@ -15,7 +15,7 @@ export async function GET(request){
         const filter = searchParams.get("filter");
         const selectedDate = searchParams.get("date");
 
-        console.log("search: ", search, " filter: ", filter, " selectedDate: ", selectedDate);
+      //   console.log("search: ", search, " filter: ", filter, " selectedDate: ", selectedDate);
 
         const currentAdmin = await getCurrentAdmin();
         
@@ -48,18 +48,7 @@ export async function GET(request){
             return NextResponse.json({ message: "No workers found" }, { status: 404 });
          }
        
-         // let startDate;
-
-         // if (selectedDate) {
-         //    startDate = new Date(selectedDate);
-         // } else {
-         //    startDate = new Date();
-         // }
-
-         // startDate.setHours(0, 0, 0, 0);
-
-         // const endDate = new Date(startDate);
-         // endDate.setDate(endDate.getDate() + 1);
+        
 
          const { startDate, endDate } = getISTDayRange(selectedDate);
 

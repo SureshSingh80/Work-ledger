@@ -9,8 +9,8 @@ import ShowResponseData from "./ShowResponseData";
 const PaymentModal = ({
   isOpen,
   worker,
- setIsOpen
-
+ setIsOpen,
+ refetch
  
 }) => {
   const [success,setSuccess] = useState(false);
@@ -46,6 +46,7 @@ const PaymentModal = ({
        if(res.success){
         setError('');
         setSuccess(res.data);
+        refetch();
         reset();
        }else{
          setSuccess('');
@@ -175,9 +176,9 @@ const PaymentModal = ({
                     value: 1,
                     message: "Amount must be greater than 0",
                 },
-                validate: (value) =>
-                    Number(value) <= pending ||
-                    "Amount cannot exceed pending amount",
+                // validate: (value) =>
+                //     Number(value) <= pending ||
+                //     "Amount cannot exceed pending amount",
                 })}
             />
 

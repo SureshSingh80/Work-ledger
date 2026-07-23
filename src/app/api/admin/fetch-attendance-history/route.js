@@ -60,6 +60,8 @@ export async function GET(request) {
 
             const endDate = new Date(year, Number(month), 1);
 
+            console.log("startDate= ",startDate,"endDate= ",endDate);
+
             historyQuery.attendanceDate = { 
                 $gte: startDate,
                 $lt: endDate,

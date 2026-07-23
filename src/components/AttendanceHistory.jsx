@@ -73,7 +73,7 @@ const AttendanceHistory = ({
             value={month}
             onChange={(e) => setMonth(e.target.value)}
           >
-            <option value="all">All Months</option>
+            <option value="">All Months</option>
             <option value="1">January</option>
             <option value="2">February</option>
             <option value="3">March</option>
@@ -233,6 +233,16 @@ const AttendanceHistory = ({
               );
 
             })}
+
+            {
+              attendanceHistory.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-5 py-4 text-center">
+                    No records found.
+                  </td>
+                </tr>
+              )
+            }
 
           </tbody>
 

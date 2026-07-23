@@ -99,9 +99,33 @@ const WorkerDetails = ({worker, totalPresent, totalHalfDays, totalPaid, refetch}
             <p className="text-sm text-gray-500">
               Pending Amount
             </p>
-            <h3 className="mt-1 text-2xl font-bold text-red-600">
+            <h3
+              className={`mt-1 text-2xl font-bold ${
+                ((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) < 0
+                  ? "text-blue-600"
+                  : ((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) === 0
+                  ? "text-green-600"
+                  : "text-orange-600"
+              }`}
+            >
               ₹{(totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)}
             </h3>
+
+            <p
+              className={`mt-1 text-sm font-medium ${
+                ((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) < 0
+                  ? "text-blue-600"
+                  : ((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) === 0
+                  ? "text-green-600"
+                  : "text-orange-600"
+              }`}
+            >
+              {((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) < 0
+                ? "Advance"
+                : ((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) === 0
+                ? "Settled"
+                : "Pending"}
+            </p>
           </div>
 
         </div>
