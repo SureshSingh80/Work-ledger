@@ -153,9 +153,17 @@ const PaymentModal = ({
                 Pending Amount
               </p>
 
-              <p className="text-xl font-bold text-red-600">
-                ₹{pending}
-              </p>
+              <p
+              className={`text-xl font-bold ${
+                pending > 0
+                  ? "text-red-600"
+                  : pending === 0
+                  ? "text-green-600"
+                  : "text-blue-600"
+              }`}
+            >
+              ₹{pending}
+            </p>
             </div>
           </div>
 
