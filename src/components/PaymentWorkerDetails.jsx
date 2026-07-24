@@ -8,12 +8,14 @@ import Loader from "./Loader";
 import { fetchWorkers } from "@/utils/admin/fetchWorkers";
 import PaymentPopUp from "./PaymentPopUp";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const PaymentWorkerDetails = () => {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [filterType, setFilterType] = useState("All");
+  const [loading,setLoading] = useState(false);
 
   const router = useRouter();
 
@@ -149,8 +151,11 @@ const PaymentWorkerDetails = () => {
                     >
                       Pay
                     </button>
-                    <button onClick={()=>router.push(`/admin/payments/${worker._id}/history`)} className="bg-blue-600 text-white px-4 py-1 rounded-xl cursor-pointer">
-                      History
+                    <button onClick={()=>{
+                      setLoading(worker._id)
+                      router.push(`/admin/payments/${worker._id}/history`)
+                    }} className="bg-blue-600 text-white px-4 py-1 rounded-xl cursor-pointer">
+                     {loading === worker._id ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : "History"}
                     </button>
                   </div>
                 </td>

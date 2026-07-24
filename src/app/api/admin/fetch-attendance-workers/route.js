@@ -105,6 +105,8 @@ export async function GET(request){
 
             isActive: worker.isActive,
 
+            joiningDate: worker.joiningDate,
+
             todayAttendance: todayAttendance
                   ? {
                         status: todayAttendance.status,

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CheckCircle2, XCircle, Clock3 } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock3, Loader2 } from 'lucide-react';
 import SearchInput from './SearchInput';
 import FilterInput from './FilterInput';
 import { useQuery } from '@tanstack/react-query';
@@ -23,6 +23,7 @@ const AttendancePage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [markingAttendanceError, setMarkingAttendanceError] = useState(null);
   const [markingAttendanceSuccess, setMarkingAttendanceSuccess] = useState(null);
+  const [loading,setLoading] = useState(false);
 
   const {data, isLoading, isError, error, refetch} = useQuery({
     queryKey: ['workers', debouncedSearch, filterType, selectedDate],
@@ -221,6 +222,10 @@ const AttendancePage = () => {
                     {worker.mobile}
                   </p>
 
+                   <p className="text-sm text-gray-500">
+                    {worker.joiningDate ? new Date(worker.joiningDate).toLocaleDateString("en-IN") : "N/A"}
+                  </p>
+
                 </td>
 
                 <td className="px-6 py-4">
@@ -269,8 +274,11 @@ const AttendancePage = () => {
 
                 <td className="px-6 py-4">
 
-                  <button onClick={ () => router.push(`/admin/workers/${worker._id}/history`)} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
-                     Go to History
+                  <button onClick={ () => {
+                    setLoading(worker._id);
+                    router.push(`/admin/workers/${worker._id}/history`)
+                  }} className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 cursor-pointer">
+                     {loading === worker._id ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : "History"}
                   </button>
 
                 </td>

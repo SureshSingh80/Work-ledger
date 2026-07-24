@@ -10,9 +10,7 @@ import { deleteWorker } from '@/utils/admin/deleteWorker'
 import ShowResponseData from './ShowResponseData'
 import { Loader2 } from 'lucide-react'
 import SearchInput from './SearchInput';
-import { searchWorkers } from '@/utils/admin/searchWorkers';
 import FilterInput from './FilterInput';
-import { filterWorkers } from '@/utils/admin/filterWorkers';
 import ReactQueryErrorPopUp from './ReactQueryErrorPopUp';
 
 const Workers = () => {
@@ -21,7 +19,7 @@ const Workers = () => {
   const [confirmDelete,setConfirmDelete] = useState(false);
   const [idToDelete,setIdToDelete] = useState('');
   const [deleteError,setDeleteError] = useState('');
-  const [loading,setLoading] = useState(false);
+  const [loading,setLoading] = useState('');
   const [debouncedSearch,setDebouncedSearch] = useState('');
   const [filterType,setFilterType] = useState('All');
 
@@ -34,7 +32,7 @@ const Workers = () => {
   
 
   const handleDelete = async() => {
-     setLoading(true);
+     setLoading('Deleting...');
    
     const res = await deleteWorker(idToDelete);
 
@@ -46,7 +44,7 @@ const Workers = () => {
       console.log("Error in deleting worker", res.error);
       setDeleteError(res.error);
     }
-    setLoading(false);
+    setLoading('');
 
   }
 
@@ -101,6 +99,10 @@ const Workers = () => {
               <p className="text-sm text-gray-500">
                 {worker.mobile}
               </p>
+
+              <p className="text-sm text-gray-500">
+                    {worker.joiningDate ? new Date(worker.joiningDate).toLocaleDateString("en-IN") : "N/A"}
+                  </p>
             </div>
 
           </td>
@@ -168,11 +170,14 @@ const Workers = () => {
 
             <div className='flex '>
                 <button
-                onClick={()=>router.push(`/admin/workers/${worker._id}`)}
+                onClick={()=>{
+                  setLoading(worker._id);
+                  router.push(`/admin/workers/${worker._id}`)
+                }}
                 className="rounded-lg bg-blue-600 px-3 py-1 text-white hover:bg-blue-700 mr-2 cursor-pointer"
               >
                 
-                <span className='flex items-center gap-1'><span className='text-sm'>View</span><EyeIcon className="h-3 w-3"/></span>
+                <span className='flex items-center gap-1'><span className='text-sm'>{loading == worker._id ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : 'View'}</span><EyeIcon className="h-3 w-3"/></span>
               </button>
 
               <button
@@ -230,7 +235,7 @@ const Workers = () => {
                 onClick={handleDelete}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 cursor-pointer"
               >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin text-white" />:"Delete"}
+                {loading == 'Deleting...' ? <Loader2 className="h-4 w-4 animate-spin text-white" />:"Delete"}
               </button>
             </div>
           </div>
