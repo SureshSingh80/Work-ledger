@@ -31,24 +31,24 @@ const AttendancePage = () => {
   });
 
       const totalPresent =
-        data?.workers.filter(
+        data?.workers?.filter(
             w => w.todayAttendance?.status === "Present"
-        ).length;
+        )?.length;
 
     const totalAbsent =
-        data?.workers.filter(
+        data?.workers?.filter(
             w => w.todayAttendance?.status === "Absent"
-        ).length;
+        )?.length;
 
     const totalHalfDay =
-        data?.workers.filter(
+        data?.workers?.filter(
             w => w.todayAttendance?.status === "Half Day"
-        ).length;
+        )?.length;
 
     const totalNotMarked =
-        data?.workers.filter(
+        data?.workers?.filter(
             w => !w.todayAttendance
-        ).length;
+        )?.length;
 
  
 
@@ -214,26 +214,26 @@ const AttendancePage = () => {
 
                 <td className="px-6 py-4">
 
-                  <p className="font-semibold">
-                    {worker.name}
-                  </p>
+              <p className="font-medium">
+                {worker?.name || "N/A"}
+              </p>
 
-                  <p className="text-sm text-gray-500">
-                    {worker.mobile}
-                  </p>
+              <p className="text-sm text-gray-500">
+                {worker?.mobile || "N/A"}
+              </p>
 
-                   <p className="text-sm text-gray-500">
-                    {worker.joiningDate ? new Date(worker.joiningDate).toLocaleDateString("en-IN") : "N/A"}
-                  </p>
+              <p className="text-sm text-gray-500">
+                    {worker.joiningDate ? new Date(worker.joiningDate).toLocaleDateString("en-IN", {day: "2-digit", month: "2-digit",year: "numeric",}) : "N/A"}
+              </p>
 
                 </td>
 
                 <td className="px-6 py-4">
-                  {worker.workerType}
+                   {worker?.workerType || "N/A"}
                 </td>
 
                 <td className="px-6 py-4">
-                  ₹{worker.dailyWage}
+                  ₹{worker?.dailyWage || "N/A"}
                 </td>
 
                 <td className="px-6 py-4">
@@ -310,7 +310,7 @@ const AttendancePage = () => {
       <div className="mt-6 flex flex-wrap gap-6 text-sm font-medium">
 
         <span>
-          Total Workers : <strong>{data?.workers.length}</strong>
+          Total Workers : <strong>{data?.workers?.length}</strong>
         </span>
 
         <span className="text-green-600">

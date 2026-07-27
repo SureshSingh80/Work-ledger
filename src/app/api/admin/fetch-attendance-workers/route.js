@@ -41,20 +41,20 @@ export async function GET(request){
             ...(filter !== "All" && {
                workerType: filter,
             }),
-         });
+         }).sort({joiningDate:-1});
         
 
          if (workers.length === 0) {
-            return NextResponse.json({ message: "No workers found" }, { status: 404 });
+            return NextResponse.json({ workers }, { status: 200 });
          }
        
         
 
          const { startDate, endDate } = getISTDayRange(selectedDate);
 
-         console.log("selectedDate:", selectedDate);
-         console.log("startDate:", startDate.toISOString());
-         console.log("endDate:", endDate.toISOString());
+         // console.log("selectedDate:", selectedDate);
+         // console.log("startDate:", startDate.toISOString());
+         // console.log("endDate:", endDate.toISOString());
 
 
       // 3. Fetch attendance only for fetched workers

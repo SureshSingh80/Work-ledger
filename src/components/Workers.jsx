@@ -93,58 +93,58 @@ const Workers = () => {
 
             <div>
               <p className="font-medium">
-                {worker.name}
+                {worker?.name || "N/A"}
               </p>
 
               <p className="text-sm text-gray-500">
-                {worker.mobile}
+                {worker?.mobile || "N/A"}
               </p>
 
               <p className="text-sm text-gray-500">
-                    {worker.joiningDate ? new Date(worker.joiningDate).toLocaleDateString("en-IN") : "N/A"}
-                  </p>
+                    {worker?.joiningDate ? new Date(worker.joiningDate).toLocaleDateString("en-IN", {day: "2-digit", month: "2-digit",year: "numeric",}) : "N/A"}
+              </p>
             </div>
 
           </td>
 
           <td className="px-12 py-3">
-            {worker.workerType}
+            {worker?.workerType || "N/A"}
           </td>
 
           <td className="px-12 py-3">
-            ₹{worker.dailyWage}
+            ₹{worker?.dailyWage || "N/A"}
           </td>
 
           <td className="px-12 py-3">
-            {worker.totalPresent + (worker.totalHalfDay * 0.5)} days
+            {(worker?.totalPresent || 0) + ((worker?.totalHalfDay || 0) * 0.5)} days
           </td>
 
           <td className="px-12 py-3">
-            ₹{(worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage}
+            ₹{(worker?.totalPresent || 0 + worker?.totalHalfDay * 0.5) * worker?.dailyWage}
           </td>
 
          <td
             className={`px-12 py-3 font-medium ${
-              ((worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage - (worker.totalPaid || 0)) < 0
+              ((worker?.totalPresent + worker?.totalHalfDay * 0.5) * worker?.dailyWage - (worker?.totalPaid || 0)) < 0
                 ? "text-blue-600"
-                : ((worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage - (worker.totalPaid || 0)) === 0
+                : ((worker?.totalPresent + worker?.totalHalfDay * 0.5) * worker?.dailyWage - (worker?.totalPaid || 0)) === 0
                 ? "text-green-600"
                 : "text-orange-600"
             }`}
           >
             <p>
               ₹
-              {(worker.totalPresent + worker.totalHalfDay * 0.5) *
-                worker.dailyWage -
-                (worker.totalPaid || 0)}
+              {(worker?.totalPresent + worker?.totalHalfDay * 0.5) *
+                worker?.dailyWage -
+                (worker?.totalPaid || 0)}
             </p>
 
             <p className="text-xs font-medium">
-              {((worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage -
-                (worker.totalPaid || 0)) < 0
+              {((worker?.totalPresent + worker?.totalHalfDay * 0.5) * worker?.dailyWage -
+                (worker?.totalPaid || 0)) < 0
                 ? "Advance"
-                : ((worker.totalPresent + worker.totalHalfDay * 0.5) * worker.dailyWage -
-                    (worker.totalPaid || 0)) === 0
+                : ((worker?.totalPresent + worker?.totalHalfDay * 0.5) * worker?.dailyWage -
+                    (worker?.totalPaid || 0)) === 0
                 ? "Settled"
                 : "Pending"}
             </p>
@@ -154,12 +154,12 @@ const Workers = () => {
 
             <span
               className={`rounded-full px-3 py-1 text-xs font-medium ${
-                worker.isActive
+                worker?.isActive
                   ? "bg-green-100 text-green-700"
                   : "bg-red-100 text-red-700"
               }`}
             >
-              {worker.isActive
+              {worker?.isActive
                 ? "Active"
                 : "Inactive"}
             </span>
@@ -171,8 +171,8 @@ const Workers = () => {
             <div className='flex '>
                 <button
                 onClick={()=>{
-                  setLoading(worker._id);
-                  router.push(`/admin/workers/${worker._id}`)
+                  setLoading(worker?._id);
+                  router.push(`/admin/workers/${worker?._id}`)
                 }}
                 className="rounded-lg bg-blue-600 px-3 py-1 text-white hover:bg-blue-700 mr-2 cursor-pointer"
               >
@@ -182,8 +182,8 @@ const Workers = () => {
 
               <button
                 onClick={() => {
-                  setConfirmDelete(worker.name);
-                  setIdToDelete(worker._id);
+                  setConfirmDelete(worker?.name);
+                  setIdToDelete(worker?._id);
                   setDeleteError('');
                 }}
                 className="rounded-lg bg-red-600 px-3 py-1 text-white hover:bg-red-700 mr-0 cursor-pointer"

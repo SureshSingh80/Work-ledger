@@ -12,6 +12,8 @@ const SearchInput = ({setDebouncedSearch}) => {
               setDebouncedSearch(search);
           },2000);
 
+          console.log("mounted");
+
           return ()=> clearTimeout(timer);
       },[search]);
 

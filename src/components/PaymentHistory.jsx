@@ -22,11 +22,11 @@ const PaymentHistory = ({
 
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
-              {worker?.name}
+              {worker?.name || 'Unknown'}
             </h2>
 
             <p className="mt-1 text-gray-600">
-              {worker?.workerType}
+              {worker?.workerType || 'Unknown'}
             </p>
 
             <div className="mt-4 flex flex-wrap gap-6 text-sm">
@@ -35,7 +35,7 @@ const PaymentHistory = ({
                 <span className="font-semibold">
                   Daily Wage:
                 </span>{' '}
-                ₹{worker?.dailyWage}
+                ₹{worker?.dailyWage || '0'}
               </div>
 
               <div>
@@ -199,21 +199,21 @@ const PaymentHistory = ({
                 >
 
                   <td className="px-8 py-4">
-                    {new Date(payment.paymentDate).toLocaleDateString(
+                    {new Date(payment?.paymentDate).toLocaleDateString(
                       'en-IN'
                     )}
                   </td>
 
                   <td className="px-8 py-4 font-medium text-green-600">
-                    ₹{payment.amount}
+                    ₹{payment?.amount}
                   </td>
 
                   <td className="px-8 py-4">
-                    {payment.paymentMethod}
+                    {payment?.paymentMethod}
                   </td>
 
                   <td className="px-8 py-4">
-                    {payment.note || '-'}
+                    {payment?.note || '-'}
                   </td>
 
                 </tr>

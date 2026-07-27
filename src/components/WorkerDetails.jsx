@@ -20,22 +20,22 @@ const WorkerDetails = ({worker, totalPresent, totalHalfDays, totalPaid, refetch}
 
           <div>
             <h1 className="text-3xl font-bold text-gray-800">
-              {worker.name}
+              {worker?.name}
             </h1>
 
             <p className="text-gray-500">
-              {worker.workerType}
+              {worker?.workerType}
             </p>
           </div>
 
           <span
             className={`rounded-full px-3 py-1 text-sm font-medium ${
-              worker.isActive
+              worker?.isActive
                 ? 'bg-green-100 text-green-700'
                 : 'bg-red-100 text-red-700'
             }`}
           >
-            {worker.isActive ? 'Active' : 'Inactive'}
+            {worker?.isActive ? 'Active' : 'Inactive'}
           </span>
 
         </div>
@@ -45,30 +45,30 @@ const WorkerDetails = ({worker, totalPresent, totalHalfDays, totalPaid, refetch}
 
           <div>
             <p className="text-sm text-gray-500">Mobile Number</p>
-            <p className="font-medium">{worker.mobile || 'N/A'}</p>
+            <p className="font-medium">{worker?.mobile || 'N/A'}</p>
           </div>
 
           <div>
             <p className="text-sm text-gray-500">Daily Wage</p>
-            <p className="font-medium">₹{worker.dailyWage}</p>
+            <p className="font-medium">₹{worker?.dailyWage}</p>
           </div>
 
           <div>
             <p className="text-sm text-gray-500">Joining Date</p>
             <p className="font-medium">
-              {new Date(worker.joiningDate).toLocaleDateString("en-IN")}
+              {new Date(worker?.joiningDate).toLocaleDateString("en-IN")}
             </p>
           </div>
 
           <div>
             <p className="text-sm text-gray-500">Worker Type</p>
-            <p className="font-medium">{worker.workerType}</p>
+            <p className="font-medium">{worker?.workerType}</p>
           </div>
 
           <div className="md:col-span-2">
             <p className="text-sm text-gray-500">Address</p>
             <p className="font-medium">
-              {worker.address || 'Not Provided'}
+              {worker?.address || 'Not Provided'}
             </p>
           </div>
 
@@ -101,28 +101,28 @@ const WorkerDetails = ({worker, totalPresent, totalHalfDays, totalPaid, refetch}
             </p>
             <h3
               className={`mt-1 text-2xl font-bold ${
-                ((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) < 0
+                ((totalPresent + totalHalfDays * 0.5) * worker?.dailyWage - (totalPaid || 0)) < 0
                   ? "text-blue-600"
-                  : ((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) === 0
+                  : ((totalPresent + totalHalfDays * 0.5) * worker?.dailyWage - (totalPaid || 0)) === 0
                   ? "text-green-600"
                   : "text-orange-600"
               }`}
             >
-              ₹{(totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)}
+              ₹{(totalPresent + totalHalfDays * 0.5) * worker?.dailyWage - (totalPaid || 0)}
             </h3>
 
             <p
               className={`mt-1 text-sm font-medium ${
-                ((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) < 0
+                ((totalPresent + totalHalfDays * 0.5) * worker?.dailyWage - (totalPaid || 0)) < 0
                   ? "text-blue-600"
-                  : ((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) === 0
+                  : ((totalPresent + totalHalfDays * 0.5) * worker?.dailyWage - (totalPaid || 0)) === 0
                   ? "text-green-600"
                   : "text-orange-600"
               }`}
             >
-              {((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) < 0
+              {((totalPresent + totalHalfDays * 0.5) * worker?.dailyWage - (totalPaid || 0)) < 0
                 ? "Advance"
-                : ((totalPresent + totalHalfDays * 0.5) * worker.dailyWage - (totalPaid || 0)) === 0
+                : ((totalPresent + totalHalfDays * 0.5) * worker?.dailyWage - (totalPaid || 0)) === 0
                 ? "Settled"
                 : "Pending"}
             </p>

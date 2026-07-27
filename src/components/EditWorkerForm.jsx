@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import ShowResponseData from "./ShowResponseData";
 
-const EditWorkerForm = ({ worker, isEditing, setIsEditing,refetch }) => {
+const EditWorkerForm = ({ worker, setIsEditing,refetch }) => {
 
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState('');

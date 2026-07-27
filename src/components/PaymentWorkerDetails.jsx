@@ -61,6 +61,9 @@ const PaymentWorkerDetails = () => {
                     <p className="font-medium">{worker.name}</p>
 
                     <p className="text-sm text-gray-500">{worker.mobile}</p>
+                     <p className="text-sm text-gray-500">
+                        {worker.joiningDate ? new Date(worker.joiningDate).toLocaleDateString("en-IN", {day: "2-digit", month: "2-digit",year: "numeric",}) : "N/A"}
+                    </p>
                   </div>
                 </td>
 

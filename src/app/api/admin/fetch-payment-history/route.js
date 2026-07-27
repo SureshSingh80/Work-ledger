@@ -37,6 +37,13 @@ export async function GET(request){
                 return NextResponse.json({message:"Admin not found"},{status:404});
             }
 
+            // check worker existence
+            const workerExists =  await Worker.exists({_id: id,adminId: currentAdmin.adminId});
+    
+            if(!workerExists){
+                return NextResponse.json({message:"Worker not found"},{status:404});
+            }
+
 
         const attendanceQuery = {
             adminId: new mongoose.Types.ObjectId(currentAdmin.adminId),

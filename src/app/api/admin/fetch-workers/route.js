@@ -42,9 +42,11 @@ export async function GET(request){
                     ...(filter !== "All" && {
                         workerType: filter,
                     }),
-                });
+                }).sort({joiningDate:-1});
 
-            // console.log("Fetched Workers: ", workers);
+            if (workers.length === 0) {
+                 return NextResponse.json({ workers }, { status: 200 });
+                }
 
          // calculate total worker attendance for each worker
           
