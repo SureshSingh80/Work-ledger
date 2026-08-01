@@ -51,7 +51,7 @@ const Dashboard = () => {
       title: "Reports & Analytics",
       description: "View attendance and payment reports.",
       icon: <BarChart3 className="h-7 w-7" />,
-      route: "/admin/reports",
+      route: "/admin/reports-analytics",
     },
 
     {
