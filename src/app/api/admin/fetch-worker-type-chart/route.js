@@ -12,9 +12,9 @@ export async function GET(request){
 
         
         
-            if(!currentAdmin){
-                return NextResponse.json({message:"Unauthorized"},{status:401});
-            }
+        if(!currentAdmin){
+            return NextResponse.json({message:"Unauthorized"},{status:401});
+        }
 
 
         // get admin existence

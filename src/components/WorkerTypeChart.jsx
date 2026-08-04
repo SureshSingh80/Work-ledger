@@ -10,6 +10,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
+import NoChartData from "./NoChartData";
 
 const WorkerTypeChart = ({ workerTypes }) => {
   return (
@@ -20,7 +21,15 @@ const WorkerTypeChart = ({ workerTypes }) => {
 
       <div className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
+          {
+            workerTypes.length === 0 ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <NoChartData title={"No Worker Available"} description={"There are no any worker found for display"} />
+              </div>
+              
+            ):
+            (
+              <BarChart
             data={workerTypes}
             margin={{
               top: 20,
@@ -48,6 +57,8 @@ const WorkerTypeChart = ({ workerTypes }) => {
               radius={[8, 8, 0, 0]}
             />
           </BarChart>
+            )
+          }
         </ResponsiveContainer>
       </div>
     </div>

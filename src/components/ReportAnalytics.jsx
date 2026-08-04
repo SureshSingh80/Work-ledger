@@ -10,6 +10,7 @@ import {
   TrendingUp,
   PieChart,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -67,6 +68,7 @@ const reports = [
 const ReportAnalytics = () => {
 
     const router = useRouter();
+    const [loading, setLoading] = React.useState('');
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mb-8">
@@ -87,7 +89,10 @@ const ReportAnalytics = () => {
             <div
               key={index}
               className="group rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg cursor-pointer"
-              onClick={()=>router.push(report.route)}
+              onClick={()=>{
+                setLoading(report.route);
+                router.push(report.route);
+              }}
             >
               <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100">
                 <Icon className="h-7 w-7 text-blue-600" />
@@ -102,10 +107,10 @@ const ReportAnalytics = () => {
               </p>
 
               <button
-                className="mt-6 flex items-center gap-2 font-medium text-blue-600 transition group-hover:gap-3"
+                className="mt-6 flex items-center gap-2 font-semibold text-blue-600 transition group-hover:gap-3"
               >
                 View Report
-                <ArrowRight size={18} />
+               { loading === report.route ? <Loader2 className="h-5 w-5 animate-spin text-blue-600 font-semibold" /> : <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />}
               </button>
             </div>
           );

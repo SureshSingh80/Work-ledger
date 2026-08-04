@@ -24,7 +24,7 @@ export async function GET(request){
             );
         }
 
-         const currentAdmin = await getCurrentAdmin();
+            const currentAdmin = await getCurrentAdmin();
              
             if(!currentAdmin){
                 return NextResponse.json({message:"Unauthorized"},{status:401});
