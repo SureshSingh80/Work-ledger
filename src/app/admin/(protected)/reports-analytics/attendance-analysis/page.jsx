@@ -8,7 +8,7 @@ import React, { useState } from 'react'
 
 const page = () => {
 
-    const [month,setMonth] = useState(new Date().getMonth()+1);
+    const [month,setMonth] = useState(0);
 
     const {data,isLoading,isError,error} = useQuery({
         queryKey:["attendanceChart",month],

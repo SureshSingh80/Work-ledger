@@ -52,12 +52,6 @@ const reports = [
     route: "/admin/reports-analytics/highest-pending-payments",
   },
   {
-    title: "Advance Payments",
-    description: "Workers who received advance payments.",
-    icon: IndianRupee,
-    route: "/admin/reports-analytics/advance-payments",
-  },
-  {
     title: "Overall Workforce Report",
     description: "Complete overview of workers & statistics.",
     icon: Users,

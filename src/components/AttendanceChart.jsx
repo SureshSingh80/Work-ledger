@@ -19,18 +19,19 @@ const AttendanceChart = ({
 }) => {
 
   const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    { value: 0, label: "All Time" },
+    { value: 1, label: "January" },
+    { value: 2, label: "February" },
+    { value: 3, label: "March" },
+    { value: 4, label: "April" },
+    { value: 5, label: "May" },
+    { value: 6, label: "June" },
+    { value: 7, label: "July" },
+    { value: 8, label: "August" },
+    { value: 9, label: "September" },
+    { value: 10, label: "October" },
+    { value: 11, label: "November" },
+    { value: 12, label: "December" },
   ];
 
   const mostPresent = attendanceData[0];
@@ -50,20 +51,16 @@ const AttendanceChart = ({
 
         <select
           value={month}
-          onChange={(e) =>
-            setMonth(Number(e.target.value))
-          }
+          onChange={(e) => setMonth(Number(e.target.value))}
           className="rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-blue-500"
         >
-          {months.map((monthName, index) => (
-            <option
-              key={monthName}
-              value={index + 1}
-            >
-              {monthName}
+          {months.map((m) => (
+            <option key={m.value} value={m.value}>
+              {m.label}
             </option>
           ))}
         </select>
+
 
       </div>
 
