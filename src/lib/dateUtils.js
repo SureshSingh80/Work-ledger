@@ -48,3 +48,18 @@ export function getISTDayRange(dateString) {
 export function getISTStartDate(dateString) {
   return getISTDayRange(dateString).startDate;
 }
+
+export function getISTMonthRange(year, month) {
+    const startDate = new Date(
+        Date.UTC(year, month - 1, 1, -5, -30)
+    );
+
+    const endDate = new Date(
+        Date.UTC(year, month, 1, -5, -30)
+    );
+
+    return {
+        startDate,
+        endDate,
+    };
+}

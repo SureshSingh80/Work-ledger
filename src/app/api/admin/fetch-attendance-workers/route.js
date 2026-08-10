@@ -52,7 +52,7 @@ export async function GET(request){
 
          const { startDate, endDate } = getISTDayRange(selectedDate);
 
-         // console.log("selectedDate:", selectedDate);
+         console.log("selectedDate:", selectedDate);
          // console.log("startDate:", startDate.toISOString());
          // console.log("endDate:", endDate.toISOString());
 

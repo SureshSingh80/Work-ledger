@@ -53,7 +53,7 @@ const FetchWorkForceChart = ({
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-2">
 
       <div>
         <h1 className="text-2xl font-bold text-gray-800">

@@ -1,4 +1,5 @@
 import React from "react";
+import ExportButton from "./ExportButton";
 
 const AttendanceHistory = ({
   worker,
@@ -55,6 +56,10 @@ const AttendanceHistory = ({
           </div>
 
         </div>
+
+        {/* Export functionality */}
+
+        <ExportButton onExcel={() => {}} onPdf={() => {}} />
 
         {/* Month Filter */}
 
