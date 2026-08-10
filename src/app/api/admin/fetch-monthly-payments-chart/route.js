@@ -1,4 +1,5 @@
 import { dbConnect } from "@/lib/Connections/dbConnect";
+import { getISTMonthRange } from "@/lib/dateUtils";
 import Payment from "@/models/Payment";
 import User from "@/models/User";
 import { getCurrentAdmin } from "@/utils/admin/getCurrentAdmin";
@@ -37,8 +38,7 @@ export async function GET(request){
         const adminObjectId = new mongoose.Types.ObjectId(currentAdmin.adminId);
 
          const year = new Date().getFullYear();
-        const startDate = new Date(year, Number(month) - 1, 1);
-        const endDate = new Date(year, Number(month), 1);
+         const { startDate, endDate } = getISTMonthRange(year, month);
 
         const monthlyPayments = await Payment.aggregate([
                     {

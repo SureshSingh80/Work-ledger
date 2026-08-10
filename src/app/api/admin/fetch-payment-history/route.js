@@ -1,4 +1,5 @@
 import { dbConnect } from "@/lib/Connections/dbConnect";
+import { getISTMonthRange } from "@/lib/dateUtils";
 import Attendance from "@/models/Attendance";
 import Payment from "@/models/Payment";
 import User from "@/models/User";
@@ -59,8 +60,7 @@ export async function GET(request){
         if (month) {
             const year = new Date().getFullYear();
 
-            const startDate = new Date(year, Number(month) - 1, 1);
-            const endDate = new Date(year, Number(month), 1);
+            const { startDate, endDate } = getISTMonthRange(year, month);
 
             attendanceQuery.attendanceDate = {
                 $gte: startDate,

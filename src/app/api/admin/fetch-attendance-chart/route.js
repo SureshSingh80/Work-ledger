@@ -1,4 +1,5 @@
 import { dbConnect } from "@/lib/Connections/dbConnect";
+import { getISTMonthRange } from "@/lib/dateUtils";
 import Attendance from "@/models/Attendance";
 import User from "@/models/User";
 import { getCurrentAdmin } from "@/utils/admin/getCurrentAdmin";
@@ -33,8 +34,7 @@ export async function GET(request) {
 
              const year = new Date().getFullYear();
 
-            const startDate = new Date(year, Number(month) - 1, 1);
-            const endDate = new Date(year, Number(month), 1);
+            const { startDate, endDate } = getISTMonthRange(year, month);
 
             // console.log("startDate,EndDate",startDate.toString(),endDate.toString());
 
