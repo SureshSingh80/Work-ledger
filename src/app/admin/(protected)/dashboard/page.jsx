@@ -64,7 +64,7 @@ const Dashboard = () => {
   return <div className="min-h-screen bg-gray-100 p-8">
 
             <div className="mt-12">
-                 <h1 className="text-3xl text-gray-700 font-bold text-center mb-2">Super Admin Dashboard</h1>
+                 <h1 className="text-3xl text-gray-700 font-bold text-center mb-2">Admin Dashboard</h1>
                 <p className=" text-center text-gray-700 mb-10">Manage your system administration</p>
             </div>
             {/* grid system */}
