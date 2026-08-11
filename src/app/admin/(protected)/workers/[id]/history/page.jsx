@@ -2,6 +2,7 @@
 import AttendanceHistory from "@/components/AttendanceHistory";
 import Loader from "@/components/Loader";
 import ReactQueryErrorPopUp from "@/components/ReactQueryErrorPopUp";
+import { exportAttendanceHistory } from "@/utils/admin/exportAttendanceHistory";
 import { fetchAttendanceHistory } from "@/utils/admin/fetchAttendanceHistory";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
@@ -15,6 +16,12 @@ const page = () => {
     queryKey: ["attendance-history", id, month],
     queryFn: () => fetchAttendanceHistory(id, month),
   });
+
+  const handleExport = (format) => {
+    exportAttendanceHistory(id, month, format);
+  }
+
+ 
 
   const history = data?.history || [];
   const worker = data?.worker || {};
@@ -40,6 +47,7 @@ const page = () => {
           totalHalfDay={summary.totalHalfDay}
           month={month}
           setMonth={setMonth}
+          handleExport={handleExport}
         />
       )}
     </div>

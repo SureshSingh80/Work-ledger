@@ -1,5 +1,8 @@
-import React from "react";
+'use client';
+import React, { useState } from "react";
 import ExportButton from "./ExportButton";
+import { exportAttendanceHistory } from "@/utils/admin/exportAttendanceHistory";
+import { useQuery } from "@tanstack/react-query";
 
 const AttendanceHistory = ({
   worker,
@@ -8,9 +11,11 @@ const AttendanceHistory = ({
   totalAbsent,
   totalHalfDay,
   month,
-  setMonth
+  setMonth,
+  handleExport,
 }) => {
 
+    
     const totalDays = totalPresent + totalAbsent + totalHalfDay;
 
     const attendancePercentage =
@@ -59,7 +64,11 @@ const AttendanceHistory = ({
 
         {/* Export functionality */}
 
-        <ExportButton onExcel={() => {}} onPdf={() => {}} />
+        <ExportButton onExcel = {()=>{
+          handleExport("excel");
+        }} onPdf = {()=>{
+          handleExport("pdf");
+        }} />
 
         {/* Month Filter */}
 
