@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
+import ExportButton from './ExportButton';
 
 const PaymentHistory = ({
   worker,
   summary,
   paymentHistory,
   month,
-  setMonth
+  setMonth,
+  handleExport,
 }) => {
   
 
@@ -18,7 +20,7 @@ const PaymentHistory = ({
 
       <div className="rounded-xl border bg-white p-6 shadow-sm">
 
-        <div className="flex flex-col justify-between gap-4 md:flex-row">
+        <div className="flex flex-col justify-between md:items-center gap-4 md:flex-row">
 
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
@@ -48,6 +50,14 @@ const PaymentHistory = ({
             </div>
 
           </div>
+
+            <div>
+               <ExportButton onExcel = {()=>{
+                  handleExport("excel");
+                }} onPdf = {()=>{
+                  handleExport("pdf");
+                }} />
+            </div>
 
           <div>
 

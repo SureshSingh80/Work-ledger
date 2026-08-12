@@ -2,6 +2,7 @@
 import Loader from "@/components/Loader";
 import PaymentHistory from "@/components/PaymentHistory";
 import ReactQueryErrorPopUp from "@/components/ReactQueryErrorPopUp";
+import { exportPaymentHistory } from "@/utils/admin/exportPaymentHistory";
 import { fetchPaymentHistory } from "@/utils/admin/fetchPaymentHistory";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
@@ -17,9 +18,14 @@ const page = () => {
     queryFn: () => fetchPaymentHistory(id,month),
   });
 
+  const handleExport = (format)=>{
+     exportPaymentHistory(id, month, format);
+  }
+
   const worker = data?.worker;
   const summary = data?.summary;
   const paymentHistory = data?.paymentHistory;
+
 
   return <div>
      {
@@ -36,6 +42,7 @@ const page = () => {
            paymentHistory={paymentHistory}
            month={month}
            setMonth={setMonth}
+           handleExport={handleExport}
          />
        )
      }

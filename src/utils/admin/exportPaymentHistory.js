@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export async function exportAttendanceHistory(id, month, format) {
-    try {
+export async function exportPaymentHistory(id, month, format){
+     try {
         const params = new URLSearchParams();
 
         params.set("id", id);
@@ -13,7 +13,7 @@ export async function exportAttendanceHistory(id, month, format) {
         }
 
         const res = await axios.get(
-            `/api/admin/export-attendance-history?${params.toString()}`,
+            `/api/admin/export-payment-history?${params.toString()}`,
             {
                 responseType: "blob",
             }
@@ -56,16 +56,16 @@ export async function exportAttendanceHistory(id, month, format) {
 
         return {
             success: true,
-            message: "Attendance history exported successfully.",
+            message: "Payment history exported successfully.",
         };
 
     } catch (error) {
-        console.log("Export attendance history error:", error);
+        console.log("Export Payment history error:", error);
 
         // Because responseType is blob, backend JSON errors
         // will also arrive as a Blob.
         let message =
-            "An error occurred while exporting attendance history.";
+            "An error occurred while exporting payment history.";
 
         if (error.response?.data instanceof Blob) {
             try {
