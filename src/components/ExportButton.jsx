@@ -24,6 +24,7 @@ const ExportButton = ({ onExcel, onPdf, disabled = false }) => {
           hover:bg-blue-700
           disabled:cursor-not-allowed
           disabled:opacity-50
+          w-full
         "
       >
         <Download size={18} />

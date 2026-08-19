@@ -18,9 +18,9 @@ const PaymentHistory = ({
 
       {/* ================= Worker Details ================= */}
 
-      <div className="rounded-xl border bg-white p-6 shadow-sm">
+      <div className="rounded-xl border bg-white p-6 shadow-sm ">
 
-        <div className="flex flex-col justify-between md:items-center gap-4 md:flex-row">
+        <div className="flex flex-col justify-between md:items-center gap-4 md:flex-row w-full ">
 
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
@@ -51,13 +51,14 @@ const PaymentHistory = ({
 
           </div>
 
-            <div>
-               <ExportButton onExcel = {()=>{
-                  handleExport("excel");
-                }} onPdf = {()=>{
-                  handleExport("pdf");
-                }} />
-            </div>
+          
+          {/* export button */}
+          <ExportButton onExcel = {()=>{
+            handleExport("excel");
+          }} onPdf = {()=>{
+            handleExport("pdf");
+          }} />
+            
 
           <div>
 
@@ -68,7 +69,7 @@ const PaymentHistory = ({
             <select
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="mt-2 rounded-lg border px-4 py-2 outline-none focus:border-blue-600"
+              className="mt-2 rounded-lg border px-4 py-2 outline-none focus:border-blue-600 w-full"
             >
               <option value="">All</option>
               <option value="1">January</option>

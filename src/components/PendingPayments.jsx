@@ -6,8 +6,9 @@ import ReactQueryErrorPopUp from "@/components/ReactQueryErrorPopUp";
 import SearchInput from './SearchInput';
 import FilterInput from './FilterInput';
 import PaymentPopUp from './PaymentPopUp';
+import ExportButton from './ExportButton';
 
-const PendingPayments = () => {
+const PendingPayments = ({handleExport}) => {
 
       const [isOpen,setIsOpen] = useState(false);
       const [selectedWorker, setSelectedWorker] = useState(null);
@@ -24,8 +25,8 @@ const PendingPayments = () => {
 
 
   return (
-    <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
-      <div className="border-b px-6 py-4">
+    <div className="overflow-hidden rounded-2xl  bg-white shadow-sm">
+      <div className=" px-6 py-4">
         <h3 className="text-lg font-semibold text-gray-800">
           Pending Payment
         </h3>
@@ -33,8 +34,13 @@ const PendingPayments = () => {
 
       {/* Search and filter functions */}
       
-       <div className='flex justify-between items-center gap-4 mb-2 mr-4'>
-         <SearchInput setDebouncedSearch={setDebouncedSearch}/>
+       <div className='flex flex-col   justify-between md:flex-row md:item-center  gap-4 mb-2 mx-4'>
+        <SearchInput setDebouncedSearch={setDebouncedSearch}/>     
+         <ExportButton onExcel={() => {
+          handleExport("excel",filterType);
+         }} onPdf={() => {
+          handleExport("pdf",filterType);
+         }} /> 
          <FilterInput setFilterType={setFilterType} />
       </div>
 
