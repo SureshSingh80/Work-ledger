@@ -24,7 +24,7 @@ const paymentSchema = new Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["Cash", "UPI", "Bank Transfer"],
+      enum: ["Cash", "UPI", "Bank Transfer", "Cheque"],
       default: "Cash",
     },
 

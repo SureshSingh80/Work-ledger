@@ -120,7 +120,7 @@ const Workers = () => {
           </td>
 
           <td className="px-12 py-3">
-            ₹{(worker?.totalPresent || 0 + worker?.totalHalfDay * 0.5) * worker?.dailyWage}
+            ₹{(worker?.totalPresent + worker?.totalHalfDay * 0.5) * worker?.dailyWage}
           </td>
 
          <td

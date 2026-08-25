@@ -2,6 +2,12 @@
 
 import React, { useState } from 'react';
 import ExportButton from './ExportButton';
+import { Eye, Loader2, Pencil, Trash2 } from 'lucide-react';
+import { deletePayment } from '@/utils/admin/deletePayment';
+import ShowResponseData from './ShowResponseData';
+import EditPaymentForm from './EditPaymentForm';
+import PaymentReciept from './PaymentReciept';
+
 
 const PaymentHistory = ({
   worker,
@@ -10,15 +16,40 @@ const PaymentHistory = ({
   month,
   setMonth,
   handleExport,
+  refetch
 }) => {
+
+  const [confirmDelete,setConfirmDelete] = useState();
+  const [editableData,setEditableData] = useState();
+  const [printableData,setPrintableData] = useState();
+  const [deleteError,setDeleteError] = useState('');
   
+  const [loading,setLoading] = useState('');
+  
+  const handleDelete = async(id)=>{
+     setLoading('Deleting...');
+     const res = await deletePayment(id);
+
+     if(res.success){
+        refetch();
+        setConfirmDelete('');
+     }
+     else{
+      setDeleteError(res.error);
+     }
+     setLoading('');
+  }
+
+  // const handleView = ()=>{
+
+  // }
 
   return (
     <div className="space-y-6">
 
       {/* ================= Worker Details ================= */}
 
-      <div className="rounded-xl border bg-white p-6 shadow-sm ">
+      <div className={`rounded-xl border bg-white p-6 shadow-sm ${confirmDelete && 'blur-sm'}` } >
 
         <div className="flex flex-col justify-between md:items-center gap-4 md:flex-row w-full ">
 
@@ -94,7 +125,7 @@ const PaymentHistory = ({
 
       {/* ================= Summary ================= */}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+      <div className={`grid grid-cols-1 gap-4 md:grid-cols-4 ${confirmDelete && 'blur-sm'}` }>
 
         <div className="rounded-xl border bg-white p-5 shadow-sm">
           <p className="text-sm text-gray-500">
@@ -164,7 +195,7 @@ const PaymentHistory = ({
 
       {/* ================= Payment History ================= */}
 
-      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
+      <div className={` overflow-hidden rounded-xl border bg-white shadow-sm ${confirmDelete && 'blur-sm'}`} >
 
         <div className="border-b px-6 py-4">
           <h3 className="text-lg font-semibold">
@@ -192,6 +223,10 @@ const PaymentHistory = ({
 
               <th className="px-8 py-3 text-left">
                 Remark
+              </th>
+
+              <th className="px-8 py-3 text-left">
+                Actions
               </th>
 
             </tr>
@@ -227,7 +262,50 @@ const PaymentHistory = ({
                     {payment?.note || '-'}
                   </td>
 
+                  <td className='px-8 py-4'>
+                    <button
+                      type="button"
+                      title="View Payment"
+                      className="p-1.5 rounded-md text-blue-600 hover:bg-blue-50 cursor-pointer"
+                      onClick={() => setPrintableData({
+                        payment,
+                        worker
+                      })}
+                  >
+                      <Eye size={16} />
+                  </button>
+
+                    <button
+                      type="button"
+                      title="Edit Payment"
+                      className="p-1.5 rounded-md text-amber-600 hover:bg-amber-50 cursor-pointer"
+                      onClick={() => setEditableData({
+                        paymentId: payment._id,
+                        amount: payment.amount,
+                        paymentDate: payment.paymentDate,
+                        paymentMethod: payment.paymentMethod,
+                        note: payment.note
+                      })}
+                  >
+                      <Pencil size={16} />
+                  </button>
+                   <button
+                      type="button"
+                      title="Delete Payment"
+                      className="p-1.5 rounded-md text-red-600 hover:bg-red-50 cursor-pointer"
+                      onClick={() => setConfirmDelete({
+                        deleteId: payment._id,
+                        deleteAmount: payment.amount,
+                         paymentDate: payment.paymentDate
+                      })}
+                  >
+                      <Trash2 size={16} />
+                  </button>
+                  </td>
+
                 </tr>
+
+              
 
               ))
 
@@ -250,7 +328,56 @@ const PaymentHistory = ({
 
         </table>
 
+     
+        
+
       </div>
+
+     {/* Delete PopUp */}
+      <div>
+              {confirmDelete && (
+                <div className="fixed inset-0 flex items-center justify-center z-50  bg-opacity-50">
+                  <div className="bg-white p-4 rounded-lg shadow-lg">
+                    <p className="text-lg font-medium text-gray-800">
+                      Are you sure you want to delete this transaction: <b>{confirmDelete.deleteAmount} of date {new Date(confirmDelete.paymentDate).toLocaleDateString('en-IN')}</b>?
+                    </p>
+                    {deleteError && <p className="text-red-600 mt-2"><ShowResponseData success="" error={deleteError}/></p>}
+
+                    <div className="flex justify-end mt-4">
+                      <button
+                        onClick={() => setConfirmDelete(false)}
+                        className="mr-2 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={()=>handleDelete(confirmDelete.deleteId)}
+                        className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 cursor-pointer"
+                      >
+                        {loading == 'Deleting...' ? <Loader2 className="h-4 w-4 animate-spin text-white" />:"Delete"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+          </div>
+
+      {/* edit PopUp */}
+      <div>
+              {editableData && (
+                 <EditPaymentForm editableData={editableData} setEditableData={setEditableData} refetch={refetch} />
+              )}
+
+        </div>
+
+        {/* print PopUp */}
+
+        <div>
+           {
+             printableData && <PaymentReciept printableData={printableData}  setPrintableData={setPrintableData} />
+           }
+        </div>
 
     </div>
   );

@@ -86,7 +86,7 @@ export async function GET(request){
                         _id: id,
                         adminId: currentAdmin.adminId,
                     })
-                    .select("name workerType dailyWage joiningDate")
+                    .select("name workerType dailyWage joiningDate mobile")
                     .lean(),
 
                     Attendance.countDocuments({

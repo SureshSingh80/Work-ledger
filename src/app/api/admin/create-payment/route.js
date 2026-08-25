@@ -60,6 +60,7 @@ export async function POST(request){
             }
 
             const paymentDate = getISTStartDate(selectedDate);
+            console.log("paymentDate= ",paymentDate);
 
             const today = getISTStartDate();
 

@@ -43,6 +43,7 @@ const page = () => {
            month={month}
            setMonth={setMonth}
            handleExport={handleExport}
+           refetch={refetch}
          />
        )
      }
