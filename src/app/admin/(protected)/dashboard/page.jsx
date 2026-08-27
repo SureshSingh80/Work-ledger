@@ -7,6 +7,7 @@ import {
   Receipt,
   BarChart3,
   LogOut,
+  Bot,
 } from "lucide-react";
 import Cards from "@/components/Cards";
 
@@ -53,6 +54,12 @@ const Dashboard = () => {
       icon: <BarChart3 className="h-7 w-7" />,
       route: "/admin/reports-analytics",
     },
+    {
+      title:"AI Assistance",
+      description:"Get answers to your queries.",
+      icon:<Bot className="h-7 w-7" />,
+      route:"/admin/ai-assistance"
+    },
 
     {
       title: "Logout",
@@ -60,6 +67,7 @@ const Dashboard = () => {
       icon: <LogOut className="h-7 w-7" />,
       route: "/admin/logout",
     },
+    
   ];
   return <div className="min-h-screen bg-gray-100 p-8">
 
