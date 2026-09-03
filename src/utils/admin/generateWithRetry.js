@@ -79,8 +79,8 @@ const workLedgerTools = [
                     required: ["period"],
                 },
             },
-            {
-                name: "get_attendance_summary",
+            {   // Bug found
+                name: "get_attendance_summary", 
 
                 description:
                     "Get the overall attendance summary of workers in Work Ledger. Use this when the user asks about total attendance, total present, absent, half days, worked days, attendance for the current month, a specific month, or a specific year.",
@@ -455,15 +455,14 @@ const workLedgerTools = [
 
 export async function generateWithRetry(
     message,
-    retries = 3
+    retries = 1
 ) {
-    for (
-        let attempt = 0;
-        attempt < retries;
-        attempt++
-    ) {
+    for (let attempt = 0; attempt < retries; attempt++) {
+
+        console.time(`Gemini-${attempt + 1}`);
+
         try {
-            return await ai.models.generateContent({
+            const response = await ai.models.generateContent({
                 model: "gemini-3.7-flash",
 
                 contents: message,
@@ -471,41 +470,43 @@ export async function generateWithRetry(
                 config: {
                     tools: workLedgerTools,
 
+                    // Reduce reasoning-token usage
+                    thinkingConfig: {
+                        thinkingLevel: "low",
+                    },
+
                     systemInstruction: `
                         You are the AI assistant for Work Ledger,
                         a worker attendance and payment management system.
 
-                        Use the available tools whenever the user's
-                        question requires actual Work Ledger data.
-
+                        Use available tools for actual Work Ledger data.
                         Never invent worker, attendance, payment,
                         or financial data.
 
                         Keep answers short and clear.
                     `,
 
+                    // Prevent unnecessarily long responses
                     maxOutputTokens: 300,
-                    temperature: 0.2,
                 },
             });
 
+            console.timeEnd(`Gemini-${attempt + 1}`);
+
+            return response;
+
         } catch (error) {
-            const isUnavailable =
-                error?.status === 503;
 
-            if (
-                !isUnavailable ||
-                attempt === retries - 1
-            ) {
-                throw error;
-            }
+            console.timeEnd(`Gemini-${attempt + 1}`);
 
-            const delay =
-                Math.pow(2, attempt) * 1000;
-
-            await new Promise((resolve) =>
-                setTimeout(resolve, delay)
+            console.log("Gemini status:", error?.status);
+            console.log("Gemini error:", error?.message);
+            console.log(
+                "Gemini cause:",
+                error?.cause?.code
             );
+
+            throw error;
         }
     }
 }

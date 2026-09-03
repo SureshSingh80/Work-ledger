@@ -270,14 +270,14 @@ export async function getPendingWorkers( adminId, { limit, sort = "highest_pendi
     // --------------------------------
     // Apply limit ONLY if user gave one
     // --------------------------------
-    if (
-        Number.isInteger(limit) &&
-        limit > 0
-    ) {
-        pipeline.push({
-            $limit: limit,
-        });
-    }
+    // if (
+    //     Number.isInteger(limit) &&
+    //     limit > 0
+    // ) {
+    //     pipeline.push({
+    //         $limit: limit,
+    //     });
+    // }
 
     return await Worker.aggregate(pipeline);
 }
