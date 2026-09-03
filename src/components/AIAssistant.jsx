@@ -6,10 +6,16 @@ import {
     Send,
     Sparkles,
     User,
+    Copy, Check
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+
 
 export default function AIAssistant() {
+
+    const textareaRef = useRef(null);
+
+    const [copiedIndex, setCopiedIndex] = useState(null);
 
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState([
@@ -26,6 +32,39 @@ export default function AIAssistant() {
         "What is my total pending payment?",
         "Give me details of Shastri",
     ];
+
+    const handleCopy = async (text, index) => {
+        try {
+            await navigator.clipboard.writeText(text);
+
+            setCopiedIndex(index);
+
+            setTimeout(() => {
+                setCopiedIndex(null);
+            }, 1500);
+        } catch (error) {
+            console.error("Failed to copy:", error);
+        }
+    };
+
+    const handleInputChange = (event) => {
+        setInput(event.target.value);
+
+        const textarea = event.target;
+
+        // Reset first so shrinking also works
+        textarea.style.height = "auto";
+
+        // Approx 8 rows max
+        const maxHeight = 240;
+
+        textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
+
+        textarea.style.overflowY =
+            textarea.scrollHeight > maxHeight
+                ? "auto"
+                : "hidden";
+    };
 
     // --------------------------------
     // Send message
@@ -52,6 +91,11 @@ export default function AIAssistant() {
 
         setInput("");
         setIsLoading(true);
+
+        if (textareaRef.current) {
+            textareaRef.current.style.height = "auto";
+            textareaRef.current.style.overflowY = "hidden";
+        }
 
         try {
             const { data } =
@@ -194,21 +238,58 @@ export default function AIAssistant() {
                                     )}
 
 
+                                
                                     {/* Message */}
                                     <div
-                                        className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-6 ${
+                                        className={`flex max-w-[75%] flex-col ${
                                             isUser
-                                                ? "bg-gray-900 text-white"
-                                                : message.isError
-                                                ? "border border-red-200 bg-red-50 text-red-700"
-                                                : "bg-gray-100 text-gray-800"
+                                                ? "items-end"
+                                                : "items-start"
                                         }`}
                                     >
-                                        <p className="whitespace-pre-line">
-                                            {
-                                                message.content
+                                        {/* Message bubble */}
+                                        <div
+                                            className={`rounded-2xl px-4 py-3 text-sm leading-6 ${
+                                                isUser
+                                                    ? "bg-gray-900 text-white"
+                                                    : message.isError
+                                                    ? "border border-red-200 bg-red-50 text-red-700"
+                                                    : "bg-gray-100 text-gray-800"
+                                            }`}
+                                        >
+                                            <p className="whitespace-pre-line">
+                                                {message.content}
+                                            </p>
+                                        </div>
+                                         {/*copy button  */}
+                                        {
+                                            !message.error && (
+                                              
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleCopy(
+                                                        message.content,
+                                                        index
+                                                    )
+                                                }
+                                                className="mt-1 flex items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
+                                                title="Copy message"
+                                            >
+                                                {copiedIndex === index ? (
+                                                    <>
+                                                        <Check className="h-3.5 w-3.5" />
+                                                        Copied
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Copy className="h-3.5 w-3.5" />
+                                                        Copy
+                                                    </>
+                                                )}
+                                            </button>
+                                                )
                                             }
-                                        </p>
                                     </div>
 
 
@@ -248,17 +329,14 @@ export default function AIAssistant() {
 
 
             {/* Input */}
-            <div className="border-t bg-white p-4">
+            <div className="border-t bg-white p-4 absolute bottom-0 left-0 right-0">
 
                 <div className="flex items-end gap-3 rounded-2xl border bg-gray-50 px-4 py-3 focus-within:ring-2 focus-within:ring-gray-200">
 
                     <textarea
+                        ref={textareaRef}
                         value={input}
-                        onChange={(event) =>
-                            setInput(
-                                event.target.value
-                            )
-                        }
+                        onChange={handleInputChange}
                         onKeyDown={
                             handleKeyDown
                         }
