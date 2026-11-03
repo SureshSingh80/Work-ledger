@@ -774,6 +774,7 @@ function getISTMonthRange(
             1
         );
 
+    
     let nextMonth = month + 1;
     let nextYear = year;
 

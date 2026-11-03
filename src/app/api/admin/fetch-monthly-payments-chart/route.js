@@ -9,11 +9,17 @@ import { NextResponse } from "next/server";
 export async function GET(request){
     try {
 
+        const initialTime = performance.now();
+        const timings = {};
+        let startTime = performance.now();
         await dbConnect();
+        timings.dbConnect = performance.now() - startTime;
+
 
         const {searchParams} = new URL(request.url);
 
         const month = Number(searchParams.get("month"));
+
 
             if (!month || month < 1 || month > 12) {
                 return NextResponse.json(
@@ -21,15 +27,19 @@ export async function GET(request){
                     { status: 400 }
                 );
             }
+        startTime = performance.now();
         const currentAdmin = await getCurrentAdmin();                 
-                
+        timings.getCurrentAdmin = performance.now() - startTime;
+
         if(!currentAdmin){
             return NextResponse.json({message:"Unauthorized"},{status:401});
         }
 
 
+        startTime = performance.now();
         // get admin existence
         const adminExists =  await User.exists({_id: currentAdmin.adminId,role: "admin"});
+        timings.getAdminExists = performance.now() - startTime;
 
         if(!adminExists){
             return NextResponse.json({message:"Admin not found"},{status:404});
@@ -40,6 +50,7 @@ export async function GET(request){
          const year = new Date().getFullYear();
          const { startDate, endDate } = getISTMonthRange(year, month);
 
+         startTime = performance.now();
         const monthlyPayments = await Payment.aggregate([
                     {
                         $match: {
@@ -92,6 +103,10 @@ export async function GET(request){
                         },
                     },
                 ]);
+        
+        timings.aggregate = performance.now() - startTime;
+        timings.total = performance.now() - initialTime;
+        console.log("Timings for fetch-monthly-payments-chart: ",timings);
 
         // console.log("Monthly Payments Chart Data: ", monthlyPayments);
         return NextResponse.json({monthlyPayments},{status:200});

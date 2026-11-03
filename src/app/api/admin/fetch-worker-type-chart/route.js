@@ -7,52 +7,73 @@ import { NextResponse } from "next/server";
 
 export async function GET(request){
      try {
+        const initialTime = performance.now();
+        const timings = {};
+        let startTime = performance.now();
         await dbConnect();
-        const currentAdmin = await getCurrentAdmin();
+        timings.dbConnect = performance.now() - startTime;
 
-        
-        
+        startTime = performance.now();
+        const currentAdmin = await getCurrentAdmin();
+        timings.getCurrentAdmin = performance.now() - startTime;
+
         if(!currentAdmin){
             return NextResponse.json({message:"Unauthorized"},{status:401});
         }
 
 
-        // get admin existence
-            const adminExists =  await User.exists({_id: currentAdmin.adminId,role: "admin"});
-
-            if(!adminExists){
-                return NextResponse.json({message:"Admin not found"},{status:404});
-            }
-
             const adminObjectId = new mongoose.Types.ObjectId(currentAdmin.adminId);
 
-            const workerTypes = await Worker.aggregate([
-                {
-                    $match: {
-                        adminId: adminObjectId,
-                    },
-                },
-                {
-                    $group: {
-                        _id: "$workerType",
-                        totalWorkers: {
-                            $sum: 1,
+           
+
+            startTime = performance.now();
+
+            const [adminExists, workerTypes] = await Promise.all([
+
+                User.exists({
+                    _id: currentAdmin.adminId,
+                    role: "admin",
+                }),
+
+                Worker.aggregate([
+                    {
+                        $match: {
+                            adminId: adminObjectId,
                         },
                     },
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        workerType: "$_id",
-                        totalWorkers: 1,
+                    {
+                        $group: {
+                            _id: "$workerType",
+                            totalWorkers: { $sum: 1 },
+                        },
                     },
-                },
-                {
-                    $sort: {
-                        totalWorkers: -1,
+                    {
+                        $project: {
+                            _id: 0,
+                            workerType: "$_id",
+                            totalWorkers: 1,
+                        },
                     },
-                },
+                    {
+                        $sort: {
+                            totalWorkers: -1,
+                        },
+                    },
+                ]),
             ]);
+
+            timings.adminAndWorkerTypes = performance.now() - startTime;
+
+            if (!adminExists) {
+                return NextResponse.json(
+                    { message: "Admin not found" },
+                    { status: 404 }
+                );
+            }
+
+            const totalTime = performance.now() - initialTime;
+            timings.totalTime = totalTime;
+            console.log("Timings: ", timings);
 
                 return NextResponse.json(
                     {

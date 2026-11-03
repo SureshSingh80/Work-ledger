@@ -10,23 +10,32 @@ import { NextResponse } from "next/server";
 
 export async function GET(request) {
   try {
+    const initialTime = performance.now();
+    const timings = {};
+    let startTime = performance.now();
     await dbConnect();
+    timings.dbConnect = performance.now() - startTime;
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
     const filter = searchParams.get("filter");
 
     // console.log("search: ", search, " filter: ", filter);
 
+    startTime = performance.now();
     const currentAdmin = await getCurrentAdmin();
+    timings.getCurrentAdmin = performance.now() - startTime;
 
     if (!currentAdmin) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
+    startTime = performance.now();
+    // get admin existence
     const adminExists = await User.exists({
       _id: currentAdmin.adminId,
       role: "admin",
     });
+    timings.adminExists = performance.now() - startTime;
 
     if (!adminExists) {
       return NextResponse.json({ message: "Admin not found" }, { status: 404 });
@@ -34,6 +43,7 @@ export async function GET(request) {
 
     const adminObjectId = new mongoose.Types.ObjectId(currentAdmin.adminId);
 
+    startTime = performance.now();
     const workers = await Worker.aggregate([
       {
         $match: {
@@ -185,6 +195,10 @@ export async function GET(request) {
         },
       },
     ]);
+    timings.aggregation = performance.now() - startTime;
+    const endTime = performance.now();
+    timings.total = endTime - initialTime;
+    console.log("Timings:", timings);
 
     return NextResponse.json(
       {

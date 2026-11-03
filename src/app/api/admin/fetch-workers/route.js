@@ -9,7 +9,11 @@ import { NextResponse } from "next/server";
 
 export async function GET(request){
       try {
+        const totalStart = performance.now();
+        let start = performance.now();
+        const timings = {};
           await dbConnect();
+        timings.dbConnect = performance.now() - start;
           const {searchParams} = new URL(request.url);
 
           const search = searchParams.get("search");
@@ -17,19 +21,25 @@ export async function GET(request){
 
         //   console.log("search: ", search, " filter: ", filter);
 
+        start = performance.now();
           const currentAdmin = await getCurrentAdmin();
+        timings.getCurrentAdmin = performance.now() - start;
 
           if(!currentAdmin){
               return NextResponse.json({message:"Unauthorized"},{status:401});
           }
 
 
+          start = performance.now();
         // get admin existence
           const adminExists =  await User.exists({_id: currentAdmin.adminId,role: "admin"});
+          timings.adminExists = performance.now() - start;
 
           if(!adminExists){
               return NextResponse.json({message:"Admin not found"},{status:404});
           }
+
+          start = performance.now();
 
           const workers = await Worker.find({      
                     adminId: currentAdmin.adminId,
@@ -43,7 +53,7 @@ export async function GET(request){
                         workerType: filter,
                     }),
                 }).sort({joiningDate:-1});
-
+                timings.workerQuery = performance.now() - start;
             if (workers.length === 0) {
                  return NextResponse.json({ workers }, { status: 200 });
                 }
@@ -52,7 +62,7 @@ export async function GET(request){
           
        
      
-
+                start = performance.now();
         const [attendanceCounts, paymentCounts] = await Promise.all([
             Attendance.aggregate([
                 {
@@ -99,7 +109,7 @@ export async function GET(request){
                 },
             ]),
         ]);
-
+        timings.aggregations = performance.now() - start;
         const attendanceMap = new Map();
 
         attendanceCounts.forEach(record => {
@@ -137,7 +147,9 @@ export async function GET(request){
                 totalPaid: paymentMap.get(worker._id.toString()) || 0,
             };
         });
-        //   console.log("Formatted Workers: ", formattedWorkers);
+         timings.total = performance.now() - totalStart;
+
+        console.log("Workers API Performance:", timings);
                         
            return NextResponse.json({workers:formattedWorkers},{status:200});
 

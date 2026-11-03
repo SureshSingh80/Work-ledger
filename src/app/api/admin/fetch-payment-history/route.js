@@ -10,7 +10,11 @@ import { NextResponse } from "next/server";
 
 export async function GET(request){
     try {
+         const initialTime = performance.now();
+         const timings ={};
+         let startTime = performance.now();
          await dbConnect();
+         timings.dbConnect = performance.now() - startTime;
          const {searchParams} = new URL(request.url);
          const id = searchParams.get("id");
          const month = searchParams.get("month");
@@ -25,24 +29,42 @@ export async function GET(request){
             );
         }
 
+            startTime = performance.now();
             const currentAdmin = await getCurrentAdmin();
+            timings.getCurrentAdmin = performance.now() - startTime;
              
             if(!currentAdmin){
                 return NextResponse.json({message:"Unauthorized"},{status:401});
             }
     
-            // get admin existence
-            const adminExists =  await User.exists({_id: currentAdmin.adminId,role: "admin"});
-    
-            if(!adminExists){
-                return NextResponse.json({message:"Admin not found"},{status:404});
+            startTime = performance.now();
+
+            const [adminExists, workerExists] = await Promise.all([
+                User.exists({
+                    _id: currentAdmin.adminId,
+                    role: "admin"
+                }),
+
+                Worker.exists({
+                    _id: id,
+                    adminId: currentAdmin.adminId
+                })
+            ]);
+
+            timings.existenceChecks = performance.now() - startTime;
+
+            if (!adminExists) {
+                return NextResponse.json(
+                    { message: "Admin not found" },
+                    { status: 404 }
+                );
             }
 
-            // check worker existence
-            const workerExists =  await Worker.exists({_id: id,adminId: currentAdmin.adminId});
-    
-            if(!workerExists){
-                return NextResponse.json({message:"Worker not found"},{status:404});
+            if (!workerExists) {
+                return NextResponse.json(
+                    { message: "Worker not found" },
+                    { status: 404 }
+                );
             }
 
 
@@ -74,6 +96,7 @@ export async function GET(request){
         }
 
 
+        startTime = performance.now();
            const [
                     worker,
                     totalPresent,
@@ -118,6 +141,8 @@ export async function GET(request){
                         .lean(),
                 ]);
 
+                timings.fetchData = performance.now() - startTime;
+
                 if (!worker) {
                     return NextResponse.json(
                         { message: "Worker not found" },
@@ -132,6 +157,9 @@ export async function GET(request){
                     (totalPresent + totalHalfDay * 0.5) * worker.dailyWage;
 
                 const pending = totalEarned - totalPaid;
+                timings.totalTime = performance.now() - initialTime;
+
+                console.log("timings for payments history API = ", timings);
 
                 return NextResponse.json({
                     worker,

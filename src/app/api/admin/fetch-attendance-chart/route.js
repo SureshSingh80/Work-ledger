@@ -7,149 +7,151 @@ import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
-      try {
-         await dbConnect();
-         const {searchParams} = new URL(request.url);
-         const month = Number(searchParams.get("month"));
+  try {
+    const initialTime = performance.now();
+    const timings = {};
+    let startTime = performance.now();
+    await dbConnect();
+    timings.dbConnect = performance.now() - startTime;
 
-            if (isNaN(month) || month < 0 || month > 12) {
-                return NextResponse.json(
-                    { message: "Bad request" },
-                    { status: 400 }
-                );
-            }
+    const { searchParams } = new URL(request.url);
+    const month = Number(searchParams.get("month"));
 
-          const currentAdmin = await getCurrentAdmin();
-                      
-            if(!currentAdmin){
-                return NextResponse.json({message:"Unauthorized"},{status:401});
-            }
+    if (isNaN(month) || month < 0 || month > 12) {
+      return NextResponse.json({ message: "Bad request" }, { status: 400 });
+    }
 
-            // get admin existence
-            const adminExists =  await User.exists({_id: currentAdmin.adminId,role: "admin"});
+    startTime = performance.now();
+    const currentAdmin = await getCurrentAdmin();
+    timings.getCurrentAdmin = performance.now() - startTime;
 
-            if(!adminExists){
-                return NextResponse.json({message:"Admin not found"},{status:404});
-            }
+    if (!currentAdmin) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-             const year = new Date().getFullYear();
+    startTime = performance.now();
+    // get admin existence
+    const adminExists = await User.exists({
+      _id: currentAdmin.adminId,
+      role: "admin",
+    });
+    timings.getAdminExists = performance.now() - startTime;
 
-            const { startDate, endDate } = getISTMonthRange(year, month);
+    if (!adminExists) {
+      return NextResponse.json({ message: "Admin not found" }, { status: 404 });
+    }
 
-            // console.log("startDate,EndDate",startDate.toString(),endDate.toString());
+    const year = new Date().getFullYear();
 
-            const adminObjectId = new mongoose.Types.ObjectId(currentAdmin.adminId);
+    const { startDate, endDate } = getISTMonthRange(year, month);
 
-             let matchStage = {
-                adminId: adminObjectId,
-            };
+    // console.log("startDate,EndDate",startDate.toString(),endDate.toString());
 
-            if (month !== 0) {
-                console.log("month", month);
-                matchStage.attendanceDate = {
-                    $gte: startDate,
-                    $lt: endDate,
-                };
-            }
+    const adminObjectId = new mongoose.Types.ObjectId(currentAdmin.adminId);
 
-            const attendanceAnalysis = await Attendance.aggregate([
-                {
-                    $match: matchStage
-                },
+    let matchStage = {
+      adminId: adminObjectId,
+    };
 
-                {
-                    $group: {
-                        _id: "$workerId",
+    if (month !== 0) {
+      console.log("month", month);
+      matchStage.attendanceDate = {
+        $gte: startDate,
+        $lt: endDate,
+      };
+    }
 
-                        totalPresent: {
-                            $sum: {
-                                $cond: [
-                                    { $eq: ["$status", "Present"] },
-                                    1,
-                                    0,
-                                ],
-                            },
-                        },
+    startTime = performance.now();
+    const attendanceAnalysis = await Attendance.aggregate([
+      {
+        $match: matchStage,
+      },
 
-                        totalHalfDay: {
-                            $sum: {
-                                $cond: [
-                                    { $eq: ["$status", "Half Day"] },
-                                    1,
-                                    0,
-                                ],
-                            },
-                        },
+      {
+        $group: {
+          _id: "$workerId",
 
-                        totalAbsent: {
-                            $sum: {
-                                $cond: [
-                                    { $eq: ["$status", "Absent"] },
-                                    1,
-                                    0,
-                                ],
-                            },
-                        },
-                    },
-                },
+          totalPresent: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "Present"] }, 1, 0],
+            },
+          },
 
-                {
-                    $addFields: {
-                        workedDays: {
-                            $add: [
-                                "$totalPresent",
-                                {
-                                    $multiply: [
-                                        "$totalHalfDay",
-                                        0.5,
-                                    ],
-                                },
-                            ],
-                        },
-                    },
-                },
+          totalHalfDay: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "Half Day"] }, 1, 0],
+            },
+          },
 
-                {
-                    $lookup: {
-                        from: "workers",
-                        localField: "_id",
-                        foreignField: "_id",
-                        as: "worker",
-                    },
-                },
+          totalAbsent: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "Absent"] }, 1, 0],
+            },
+          },
+        },
+      },
 
-                {
-                    $unwind: {
-                        path: "$worker",
-                        preserveNullAndEmptyArrays: false,
-                    },
-                },
+      {
+        $addFields: {
+          workedDays: {
+            $add: [
+              "$totalPresent",
+              {
+                $multiply: ["$totalHalfDay", 0.5],
+              },
+            ],
+          },
+        },
+      },
 
-                {
-                    $project: {
-                        _id: 0,
-                        workerId: "$worker._id",
-                        workerName: "$worker.name",
-                        workerType: "$worker.workerType",
+      {
+        $lookup: {
+          from: "workers",
+          localField: "_id",
+          foreignField: "_id",
+          as: "worker",
+        },
+      },
 
-                        totalPresent: 1,
-                        totalHalfDay: 1,
-                        totalAbsent: 1,
-                        workedDays: 1,
-                    },
-                },
+      {
+        $unwind: {
+          path: "$worker",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
 
-                {
-                    $sort: {
-                        workedDays: -1,
-                    },
-                },
-            ]);
+      {
+        $project: {
+          _id: 0,
+          workerId: "$worker._id",
+          workerName: "$worker.name",
+          workerType: "$worker.workerType",
 
-            // console.log("attendanceAnalysis",attendanceAnalysis);
-            return NextResponse.json({attendanceAnalysis},{status:200});
-      } catch (error) {
-        console.error("Error fetching attendance chart:", error);
-        return NextResponse.json({message:"Error fetching attendance chart"},{status:500});
-      }
+          totalPresent: 1,
+          totalHalfDay: 1,
+          totalAbsent: 1,
+          workedDays: 1,
+        },
+      },
+
+      {
+        $sort: {
+          workedDays: -1,
+        },
+      },
+    ]);
+    timings.aggregate = performance.now() - startTime;
+
+    timings.totalTime = performance.now() - initialTime;
+    console.log("Timings for fetching attendance chart: ", timings);
+
+    // console.log("attendanceAnalysis",attendanceAnalysis);
+    return NextResponse.json({ attendanceAnalysis }, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching attendance chart:", error);
+    return NextResponse.json(
+      { message: "Error fetching attendance chart" },
+      { status: 500 },
+    );
+  }
 }

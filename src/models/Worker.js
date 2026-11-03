@@ -77,5 +77,10 @@ workerSchema.index(
   }
 );
 
+workerSchema.index({
+  adminId: 1,
+  joiningDate: -1
+});
+
 const Worker = models.Worker || model("Worker", workerSchema);
 export default Worker;

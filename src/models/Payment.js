@@ -50,6 +50,7 @@ const paymentSchema = new Schema(
 paymentSchema.index({ adminId: 1, workerId: 1 });
 paymentSchema.index({ workerId: 1, paymentDate: -1 });
 
+
 const Payment = models.Payment ||
   model("Payment", paymentSchema);
 

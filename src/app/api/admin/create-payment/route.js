@@ -9,10 +9,16 @@ import { NextResponse } from "next/server";
 
 export async function POST(request){
     try {
+        const initialTime = performance.now();
+        const timings ={};
+        let startTime = performance.now();
         await dbConnect();
+        timings.dbConnect = performance.now() - startTime;
         const body = await request.json();
 
+        startTime = performance.now();
         const validation = paymentSchema.safeParse(body);
+        
 
         if (!validation.success) {
             return NextResponse.json(
@@ -33,24 +39,42 @@ export async function POST(request){
             note,
         } = validation.data;
 
+        timings.validation = performance.now() - startTime;
+
+         startTime = performance.now();
+
         // authenticate admin
             const currentAdmin = await getCurrentAdmin();
                     
             if(!currentAdmin){
                 return NextResponse.json({message:"Unauthorized"},{status:401});
             }
-    
-            // get admin existence
-            const adminExists =  await User.exists({_id: currentAdmin.adminId,role: "admin"});
-    
-            if(!adminExists){
-                return NextResponse.json({message:"Admin not found"},{status:404});
-            }
 
-            const workerExists = await Worker.exists({
-                _id: workerId,
-                adminId: currentAdmin.adminId,
-            });
+            timings.getCurrentAdmin = performance.now() - startTime;
+    
+            startTime = performance.now();
+            // get admin existence
+            startTime = performance.now();
+
+            const [adminExists, workerExists] = await Promise.all([
+                User.exists({
+                    _id: currentAdmin.adminId,
+                    role: "admin"
+                }),
+                Worker.exists({
+                    _id: workerId,
+                    adminId: currentAdmin.adminId
+                })
+            ]);
+
+            timings.existenceChecks = performance.now() - startTime;
+
+            if (!adminExists) {
+                return NextResponse.json(
+                    { message: "Admin not found" },
+                    { status: 404 }
+                );
+            }
 
             if (!workerExists) {
                 return NextResponse.json(
@@ -68,6 +92,7 @@ export async function POST(request){
                 return NextResponse.json({message:"Invalid payment date"},{status:400});
             }
 
+            startTime = performance.now();
             const payment = await Payment.create({
                 adminId: currentAdmin.adminId,
                 workerId,
@@ -78,6 +103,12 @@ export async function POST(request){
             });
 
             console.log("Payment created = ",payment);
+
+            timings.createPayment = performance.now() - startTime;
+            timings.totalTime = performance.now() - initialTime;
+
+            console.log("timings for payments create API = ",timings);
+
 
             return NextResponse.json({message:"Payment created successfully!"},{status:201});
 

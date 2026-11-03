@@ -9,7 +9,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(request){
      try {
+         const initialTime = performance.now();
+         let startTime = performance.now();
+        const timings = {};
         await dbConnect();
+        timings.dbConnect = performance.now() - startTime;
+        
         const { searchParams } = new URL(request.url);
         const search = searchParams.get("search");
         const filter = searchParams.get("filter");
@@ -17,19 +22,25 @@ export async function GET(request){
 
       //   console.log("search: ", search, " filter: ", filter, " selectedDate: ", selectedDate);
 
+
+        startTime = performance.now();
         const currentAdmin = await getCurrentAdmin();
-        
+        timings.getCurrentAdmin = performance.now() - startTime;
+
          if(!currentAdmin){
                return NextResponse.json({message:"Unauthorized"},{status:401});
          }
 
+         startTime = performance.now();
          // get admin existence
          const adminExists =  await User.exists({_id: currentAdmin.adminId,role: "admin"});
+         timings.getAdminExists = performance.now() - startTime;
 
          if(!adminExists){
                return NextResponse.json({message:"Admin not found"},{status:404});
          }
 
+         startTime = performance.now();
          const workers = await Worker.find({      
             adminId: currentAdmin.adminId,
             ...(search && {
@@ -43,7 +54,7 @@ export async function GET(request){
             }),
          }).sort({joiningDate:-1});
         
-
+         timings.getWorkers = performance.now() - startTime;
          if (workers.length === 0) {
             return NextResponse.json({ workers }, { status: 200 });
          }
@@ -57,6 +68,7 @@ export async function GET(request){
          // console.log("endDate:", endDate.toISOString());
 
 
+         startTime = performance.now();
       // 3. Fetch attendance only for fetched workers
       const attendance = await Attendance.find({
          adminId: currentAdmin.adminId,
@@ -70,6 +82,8 @@ export async function GET(request){
             $lt: endDate,
          },
       }).lean();
+
+      timings.getAttendance = performance.now() - startTime;
 
       // console.log("Attendance Records: ", attendance);
 
@@ -122,6 +136,10 @@ export async function GET(request){
 
       // console.log("Formatted Workers: ", formattedWorkers);
 
+      const endTime = performance.now();
+      timings.totalTime = endTime - initialTime;
+      
+      console.log("Timings:", timings);
       return NextResponse.json({
          workers: formattedWorkers,
       }, { status: 200 });
