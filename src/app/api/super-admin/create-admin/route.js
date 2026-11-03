@@ -8,24 +8,32 @@ import { getCurrentSuperAdmin } from "@/utils/superAdmin/getCurrentSuperAdmin";
 
 export async function POST(request){
     try {
-        await dbConnect();
 
+        const initialTime = performance.now();
+        const timings = {};
+        let startTime = performance.now();
+        await dbConnect();
+        timings.dbConnect = performance.now() - startTime;
         
        // check authentication 
 
+       startTime = performance.now();
        const currentSuperAdmin = await getCurrentSuperAdmin();
+       timings.getCurrentSuperAdmin = performance.now() - startTime;
    
 
         if(!currentSuperAdmin){
             return NextResponse.json({message:"Unauthorized"},{status:401});
         }
 
+        startTime = performance.now();
         //  check superAdmin exists in the database
          const superAdminExists =  await User.exists({_id: currentSuperAdmin.adminId,role: "superAdmin"});
 
          if(!superAdminExists){
             return NextResponse.json({message:"Super Admin not found"},{status:404});
          }
+         timings.superAdminExists = performance.now() - startTime;
 
        
 
@@ -41,7 +49,10 @@ export async function POST(request){
          const parsedData = parseData.data; // guranteed parsed data is available here
 
 
+         startTime = performance.now();
+         // checking email duplicacy 
          const existingAdmin = await User.exists({email: parsedData.email});
+         timings.emailExists = performance.now() - startTime;
 
             if (existingAdmin) {
                 return NextResponse.json(
@@ -55,10 +66,13 @@ export async function POST(request){
 
        // password hashing
        const saltRounds = 10;
+       startTime = performance.now();
        const hashedPassword = await bcrypt.hash(parsedData.password, saltRounds);
+        timings.hashPassword = performance.now() - startTime;
 
         // create new User 
 
+        startTime = performance.now();
         const newUser = new User({
             username:username,
             email:parsedData.email,
@@ -67,11 +81,24 @@ export async function POST(request){
             isActive:parsedData.isActive
         });
 
-        await newUser.save();
+        try {
+            await newUser.save();
+            } catch (error) {
+            if (error.code === 11000 && error.keyPattern?.email) {
+                return NextResponse.json(
+                { message: "Email already exists" },
+                { status: 409 }
+                );
+            }
+
+            throw error;
+            }
 
         // console.log("New User Created:", newUser); // Debugging log
 
-        
+        timings.newUserSave = performance.now() - startTime;
+        timings.totalTime = performance.now() - initialTime;
+        console.log("Timings for creating admin:", timings);
 
         return NextResponse.json({message:"Admin created successfully"}, {status:201});
     } catch (error) {
